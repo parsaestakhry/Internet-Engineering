@@ -20,6 +20,8 @@
             content: counter(item, decimal-leading-zero) ": ";
             font-weight: bold;
             color: blue;
+            font-style: normal;
+            /* Different style for numbers */
         }
 
         ol li {
@@ -40,6 +42,13 @@
             content: counter(item, decimal-leading-zero) "." counter(subitem, decimal-leading-zero) ": ";
             font-weight: bold;
             color: red;
+            font-style: normal;
+            /* Different style for numbers */
+        }
+
+        ol ol li {
+            color: purple;
+            font-style: oblique;
         }
     </style>
 </head>
