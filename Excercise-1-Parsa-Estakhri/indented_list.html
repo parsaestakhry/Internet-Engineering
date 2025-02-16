@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ol {
+            counter-reset: item 0;
+            list-style-type: none;
+        }
+
+        ol li {
+            counter-increment: item;
+            margin-bottom: 10px;
+        }
+
+        ol li::before {
+            content: counter(item, decimal-leading-zero) ": ";
+            font-weight: bold;
+            color: blue;
+        }
+
+        ol li {
+            color: green;
+            font-style: italic;
+        }
+
+        ol ol {
+            counter-reset: subitem;
+            margin-left: 20px;
+        }
+
+        ol ol li {
+            counter-increment: subitem;
+        }
+
+        ol ol li::before {
+            content: counter(item, decimal-leading-zero) "." counter(subitem, decimal-leading-zero) ": ";
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <ol>
+        <li>hello world
+            <ol>
+                <li>hello</li>
+                <li>world</li>
+            </ol>
+        </li>
+        <li>this is
+            <ol>
+                <li>a nested</li>
+                <li>list</li>
+            </ol>
+        </li>
+        <li>example</li>
+    </ol>
+</body>
+
+</html>
