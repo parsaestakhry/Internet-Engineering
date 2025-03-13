@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Number Validator</title>
+</head>
+
+<body>
+    <h1>Iranian Phone Number Validator</h1>
+    <form>
+        <input type="tel" pattern="^(?:(?:\+98|0098|0)9\d{9})$" placeholder="Enter phone number (e.g., +989123456789)"
+            required
+            title="Please enter a valid Iranian phone number starting with +98, 0098, or 0, followed by 9 digits">
+        <button type="submit">Validate</button>
+    </form>
+    <p>Valid formats:</p>
+    <ul>
+        <li>+989 - 9digits</li>
+        <li>09 - 9digits </li>
+        <li>00989 - 9digits </li>
+    </ul>
+</body>
+
+</html>
