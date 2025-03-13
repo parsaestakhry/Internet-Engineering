@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persian Year Regex</title>
+</head>
+
+<body>
+    <form>
+        <label for="persian-date">Enter Persian Date (YYYY/MM/DD):</label>
+        <input type="text" id="persian-date" name="persian-date"
+            pattern="^(13|14)\d{2}\/((0[1-6]\/(0[1-9]|[12][0-9]|3[01]))|(0[7-9]|1[0-2])\/(0[1-9]|[12][0-9]|30))$"
+            required>
+        <input type="submit">
+    </form>
+</body>
+
+</html>
