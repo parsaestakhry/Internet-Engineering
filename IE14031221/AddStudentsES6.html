@@ -1,50 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Add Students</title>
-<script>
-    class Student{
-        constructor(stCode, firstName, lastName, stField) {
-            this.stCode = stCode;
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.stField = stField;
-            this.selectedCourses = [];
-            this.examResults = []
-        }
-        addCourse(course){
-            this.selectedCourses.push(course)
-        }
-        addExamResult(stExamResult) {
-            this.examResults.push(stExamResult)
+    <meta charset="UTF-8"> <!-- Specifies the character encoding for the HTML document -->
+    <title>Add Students</title> <!-- Title of the HTML document -->
+    <script>
+        // JavaScript code starts here
 
+        // Define a Student class
+        class Student {
+            // Constructor to initialize student properties
+            constructor(stCode, firstName, lastName, stField) {
+                this.stCode = stCode; // Student code
+                this.firstName = firstName; // First name
+                this.lastName = lastName; // Last name
+                this.stField = stField; // Field of study
+                this.selectedCourses = []; // Array to store selected courses
+                this.examResults = []; // Array to store exam results
+            }
+            // Method to add a course to the student's selected courses
+            addCourse(course) {
+                this.selectedCourses.push(course);
+            }
+            // Method to add an exam result to the student's exam results
+            addExamResult(stExamResult) {
+                this.examResults.push(stExamResult);
+            }
+            // Method to get the full name of the student
+            fullName() {
+                return this.firstName + ' ' + this.lastName;
+            }
+            // Placeholder method to calculate the total grade
+            calcTotalGrade() {
+                //TODO: By students as exercise
+            }
+            // Placeholder method to get the result of a specific course
+            getCourseResult(courseId) {
+                //TODO: By students as exercise
+            }
         }
 
-        fullName() {
-          return  this.firstName + ' ' + this.lastName
-        }
-        calcTotalGrade(){
-            //TODO: By students as exercise
-        }
-        getCourseResult(courseId) {
-            //TODO: By students as exercise
-
-        }
-
-    }
-
-    function createStudentTable() {
-        if (stArr.length == 0){
-            document.getElementById("dtblStudent").innerHTML = "Student List is empty"
-        }else {
-            let tblStu = `<table border="1px">
+        // Function to create and display the student table
+        function createStudentTable() {
+            if (stArr.length == 0) { // Check if the student array is empty
+                document.getElementById("dtblStudent").innerHTML = "Student List is empty";
+            } else {
+                // Create the table header
+                let tblStu = `<table border="1px">
 <tr>
     <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th></th><th></th><th></th>
-</tr>`
-            let idx = 1;
-            for(let st of stArr){
-                tblStu += ` <tr>
+</tr>`;
+                let idx = 1; // Initialize row index
+                // Loop through each student and create a row in the table
+                for (let st of stArr) {
+                    tblStu += ` <tr>
  <td>${idx++}</td>
  <td>${st.stCode}</td>
  <td>${st.fullName()}</td>
@@ -52,126 +61,127 @@
  <td><button onclick="fillEditStudent(${st.stCode})">Edit</button></td>
  <td><button onclick="deleteStudentById(${st.stCode})">Delete</button></td>
  <td><button>select course</button></td>
-</tr>`
-            }
-            tblStu += "</table>"
-            document.getElementById("dtblStudent").innerHTML = tblStu
-        }
-    }
-
-    function getStudentById(stCode) {
-        for (let st of stArr) {
-            if(st.stCode ==  stCode){
-                return st
-            }
-        }
-        return null;
-
-    }
-
-    function handleStudentLoad(stat) {
-        if (stat == 1){
-            document.getElementById("btnAddStudent").removeAttribute("disabled")
-            // document.getElementById("dtblStudent").removeAttribute("disabled")
-            document.getElementById("ddfnStudent").style.display = "none"
-        }else{
-            document.getElementById("btnAddStudent").setAttribute("disabled","disabled")
-            // document.getElementById("dtblStudent").setAttribute("disabled","disabled")
-            document.getElementById("ddfnStudent").style.display = "block"
-        }
-
-    }
-
-    function handleAddNewStudent() {
-        handleStudentLoad(2)
-        document.getElementById("stCode").value = ""
-        document.getElementById("stFirstName").value = ""
-        document.getElementById("stLastName").value = ""
-        document.getElementById("stField").value = ""
-        document.getElementById("stActionType").value = "new"
-
-    }
-
-    function fillEditStudent(stCode) {
-        let st = getStudentById(stCode)
-        if(st != null){
-            document.getElementById("stCode").value = st.stCode
-            document.getElementById("stFirstName").value = st.firstName
-            document.getElementById("stLastName").value = st.lastName
-            document.getElementById("stField").value = st.stField
-            document.getElementById("stActionType").value = st.stCode
-            handleStudentLoad(2)
-        }
-    }
-
-    function saveStudent() {
-        let actionType = document.getElementById("stActionType").value
-        if (actionType == "new"){
-            let code = document.getElementById("stCode").value
-            let fName = document.getElementById("stFirstName").value
-            let lName = document.getElementById("stLastName").value
-            let field = document.getElementById("stField").value
-
-            let st = new Student(code,fName,lName,field)
-            stArr.push(st)
-        }else{
-
-
-            let st = getStudentById(actionType)
-            st.stCode = document.getElementById("stCode").value
-            st.firstName = document.getElementById("stFirstName").value
-            st.lastName = document.getElementById("stLastName").value
-            st.stField = document.getElementById("stField").value
-        }
-
-        handleStudentLoad(1)
-        createStudentTable()
-    }
-
-    function getStudentIndexById(stCode) {
-        let idx = -1;
-        for (let i in stArr) {
-            if(stArr[i].stCode == stCode){
-                idx = i;
-                break;
+</tr>`;
+                }
+                tblStu += "</table>"; // Close the table
+                document.getElementById("dtblStudent").innerHTML = tblStu; // Display the table
             }
         }
 
-        return idx;
-    }
-
-    function deleteStudentById(stCode) {
-        let idx = getStudentIndexById(stCode)
-        if (idx > -1){
-            stArr.splice(idx,1)
-            createStudentTable()
+        // Function to get a student by their code
+        function getStudentById(stCode) {
+            for (let st of stArr) { // Loop through each student
+                if (st.stCode == stCode) { // Check if the student code matches
+                    return st; // Return the student
+                }
+            }
+            return null; // Return null if no student is found
         }
-    }
 
+        // Function to handle the visibility of the student form
+        function handleStudentLoad(stat) {
+            if (stat == 1) { // If stat is 1, show the add button and hide the form
+                document.getElementById("btnAddStudent").removeAttribute("disabled");
+                document.getElementById("ddfnStudent").style.display = "none";
+            } else { // If stat is not 1, hide the add button and show the form
+                document.getElementById("btnAddStudent").setAttribute("disabled", "disabled");
+                document.getElementById("ddfnStudent").style.display = "block";
+            }
+        }
 
-</script>
+        // Function to handle adding a new student
+        function handleAddNewStudent() {
+            handleStudentLoad(2); // Show the form
+            document.getElementById("stCode").value = ""; // Clear the student code input
+            document.getElementById("stFirstName").value = ""; // Clear the first name input
+            document.getElementById("stLastName").value = ""; // Clear the last name input
+            document.getElementById("stField").value = ""; // Clear the field input
+            document.getElementById("stActionType").value = "new"; // Set the action type to new
+        }
+
+        // Function to fill the form with the details of the student to be edited
+        function fillEditStudent(stCode) {
+            let st = getStudentById(stCode); // Get the student by code
+            if (st != null) { // If the student is found
+                document.getElementById("stCode").value = st.stCode; // Set the student code input
+                document.getElementById("stFirstName").value = st.firstName; // Set the first name input
+                document.getElementById("stLastName").value = st.lastName; // Set the last name input
+                document.getElementById("stField").value = st.stField; // Set the field input
+                document.getElementById("stActionType").value = st.stCode; // Set the action type to the student code
+                handleStudentLoad(2); // Show the form
+            }
+        }
+
+        // Function to save a new or edited student
+        function saveStudent() {
+            let actionType = document.getElementById("stActionType").value; // Get the action type
+            if (actionType == "new") { // If the action type is new
+                let code = document.getElementById("stCode").value; // Get the student code input
+                let fName = document.getElementById("stFirstName").value; // Get the first name input
+                let lName = document.getElementById("stLastName").value; // Get the last name input
+                let field = document.getElementById("stField").value; // Get the field input
+
+                let st = new Student(code, fName, lName, field); // Create a new student
+                stArr.push(st); // Add the student to the array
+            } else {
+                let st = getStudentById(actionType); // Get the student by code
+                st.stCode = document.getElementById("stCode").value; // Update the student code
+                st.firstName = document.getElementById("stFirstName").value; // Update the first name
+                st.lastName = document.getElementById("stLastName").value; // Update the last name
+                st.stField = document.getElementById("stField").value; // Update the field
+            }
+
+            handleStudentLoad(1); // Hide the form
+            createStudentTable(); // Update the student table
+        }
+
+        // Function to get the index of a student by their code
+        function getStudentIndexById(stCode) {
+            let idx = -1; // Initialize the index to -1
+            for (let i in stArr) { // Loop through each student
+                if (stArr[i].stCode == stCode) { // Check if the student code matches
+                    idx = i; // Set the index
+                    break; // Break the loop
+                }
+            }
+            return idx; // Return the index
+        }
+
+        // Function to delete a student by their code
+        function deleteStudentById(stCode) {
+            let idx = getStudentIndexById(stCode); // Get the index of the student
+            if (idx > -1) { // If the student is found
+                stArr.splice(idx, 1); // Remove the student from the array
+                createStudentTable(); // Update the student table
+            }
+        }
+
+    </script>
 </head>
+
 <body>
-<div id="dStudent">
-    <div id="dhdrStudent">
-        <button onclick="handleAddNewStudent()" id="btnAddStudent">Add new Student</button>
+    <div id="dStudent">
+        <div id="dhdrStudent">
+            <button onclick="handleAddNewStudent()" id="btnAddStudent">Add new Student</button>
+            <!-- Button to add a new student -->
+        </div>
+        <div id="dtblStudent"></div> <!-- Div to display the student table -->
+        <div id="ddfnStudent">
+            Student Code: <input type="text" id="stCode"><br> <!-- Input for student code -->
+            First Name: <input type="text" id="stFirstName"><br> <!-- Input for first name -->
+            Last Name: <input type="text" id="stLastName"><br> <!-- Input for last name -->
+            Field: <input type="text" id="stField"><br> <!-- Input for field -->
+            <input type="hidden" id="stActionType"> <!-- Hidden input for action type -->
+            <button onclick="saveStudent()">Save</button> <!-- Button to save the student -->
+            <button onclick="handleStudentLoad(1)">Cancel</button> <!-- Button to cancel and hide the form -->
+        </div>
     </div>
-    <div id="dtblStudent"></div>
-    <div id="ddfnStudent">
-        Student Code: <input type="text" id="stCode"><br>
-        First Name: <input type="text" id="stFirstName"><br>
-        Last Name: <input type="text" id="stLastName"><br>
-        Field: <input type="text" id="stField"><br>
-        <input type="hidden" id="stActionType">
-        <button onclick="saveStudent()">Save</button>
-        <button onclick="handleStudentLoad(1)">Cancel</button>
-    </div>
-</div>
 </body>
+
 </html>
 
 <script>
-    stArr = []
-    handleStudentLoad(1)
-    createStudentTable()
+    stArr = []; // Initialize an empty array to store students
+    handleStudentLoad(1); // Hide the form initially
+    createStudentTable(); // Create the initial student table
 </script>
