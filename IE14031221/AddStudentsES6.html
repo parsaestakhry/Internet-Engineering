@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Students</title>
+<script>
+    class Student{
+        constructor(stCode, firstName, lastName, stField) {
+            this.stCode = stCode;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.stField = stField;
+            this.selectedCourses = [];
+            this.examResults = []
+        }
+        addCourse(course){
+            this.selectedCourses.push(course)
+        }
+        addExamResult(stExamResult) {
+            this.examResults.push(stExamResult)
+
+        }
+
+        fullName() {
+          return  this.firstName + ' ' + this.lastName
+        }
+        calcTotalGrade(){
+            //TODO: By students as exercise
+        }
+        getCourseResult(courseId) {
+            //TODO: By students as exercise
+
+        }
+
+    }
+
+    function createStudentTable() {
+        if (stArr.length == 0){
+            document.getElementById("dtblStudent").innerHTML = "Student List is empty"
+        }else {
+            let tblStu = `<table border="1px">
+<tr>
+    <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th></th><th></th><th></th>
+</tr>`
+            let idx = 1;
+            for(let st of stArr){
+                tblStu += ` <tr>
+ <td>${idx++}</td>
+ <td>${st.stCode}</td>
+ <td>${st.fullName()}</td>
+ <td>${st.stField}</td>
+ <td><button onclick="fillEditStudent(${st.stCode})">Edit</button></td>
+ <td><button onclick="deleteStudentById(${st.stCode})">Delete</button></td>
+ <td><button>select course</button></td>
+</tr>`
+            }
+            tblStu += "</table>"
+            document.getElementById("dtblStudent").innerHTML = tblStu
+        }
+    }
+
+    function getStudentById(stCode) {
+        for (let st of stArr) {
+            if(st.stCode ==  stCode){
+                return st
+            }
+        }
+        return null;
+
+    }
+
+    function handleStudentLoad(stat) {
+        if (stat == 1){
+            document.getElementById("btnAddStudent").removeAttribute("disabled")
+            // document.getElementById("dtblStudent").removeAttribute("disabled")
+            document.getElementById("ddfnStudent").style.display = "none"
+        }else{
+            document.getElementById("btnAddStudent").setAttribute("disabled","disabled")
+            // document.getElementById("dtblStudent").setAttribute("disabled","disabled")
+            document.getElementById("ddfnStudent").style.display = "block"
+        }
+
+    }
+
+    function handleAddNewStudent() {
+        handleStudentLoad(2)
+        document.getElementById("stCode").value = ""
+        document.getElementById("stFirstName").value = ""
+        document.getElementById("stLastName").value = ""
+        document.getElementById("stField").value = ""
+        document.getElementById("stActionType").value = "new"
+
+    }
+
+    function fillEditStudent(stCode) {
+        let st = getStudentById(stCode)
+        if(st != null){
+            document.getElementById("stCode").value = st.stCode
+            document.getElementById("stFirstName").value = st.firstName
+            document.getElementById("stLastName").value = st.lastName
+            document.getElementById("stField").value = st.stField
+            document.getElementById("stActionType").value = st.stCode
+            handleStudentLoad(2)
+        }
+    }
+
+    function saveStudent() {
+        let actionType = document.getElementById("stActionType").value
+        if (actionType == "new"){
+            let code = document.getElementById("stCode").value
+            let fName = document.getElementById("stFirstName").value
+            let lName = document.getElementById("stLastName").value
+            let field = document.getElementById("stField").value
+
+            let st = new Student(code,fName,lName,field)
+            stArr.push(st)
+        }else{
+
+
+            let st = getStudentById(actionType)
+            st.stCode = document.getElementById("stCode").value
+            st.firstName = document.getElementById("stFirstName").value
+            st.lastName = document.getElementById("stLastName").value
+            st.stField = document.getElementById("stField").value
+        }
+
+        handleStudentLoad(1)
+        createStudentTable()
+    }
+
+    function getStudentIndexById(stCode) {
+        let idx = -1;
+        for (let i in stArr) {
+            if(stArr[i].stCode == stCode){
+                idx = i;
+                break;
+            }
+        }
+
+        return idx;
+    }
+
+    function deleteStudentById(stCode) {
+        let idx = getStudentIndexById(stCode)
+        if (idx > -1){
+            stArr.splice(idx,1)
+            createStudentTable()
+        }
+    }
+
+
+</script>
+</head>
+<body>
+<div id="dStudent">
+    <div id="dhdrStudent">
+        <button onclick="handleAddNewStudent()" id="btnAddStudent">Add new Student</button>
+    </div>
+    <div id="dtblStudent"></div>
+    <div id="ddfnStudent">
+        Student Code: <input type="text" id="stCode"><br>
+        First Name: <input type="text" id="stFirstName"><br>
+        Last Name: <input type="text" id="stLastName"><br>
+        Field: <input type="text" id="stField"><br>
+        <input type="hidden" id="stActionType">
+        <button onclick="saveStudent()">Save</button>
+        <button onclick="handleStudentLoad(1)">Cancel</button>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    stArr = []
+    handleStudentLoad(1)
+    createStudentTable()
+</script>
