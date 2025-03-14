@@ -46,22 +46,24 @@
                 document.getElementById("dtblStudent").innerHTML = "Student List is empty";
             } else {
                 // Create the table header
-                let tblStu = `<table border="1px">
-<tr>
-    <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th></th><th></th><th></th>
-</tr>`;
+                let tblStu =
+                    `<table border="1px">
+                <tr>
+                    <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th></th><th></th><th></th>
+                </tr>`;
                 let idx = 1; // Initialize row index
                 // Loop through each student and create a row in the table
                 for (let st of stArr) {
-                    tblStu += ` <tr>
- <td>${idx++}</td>
- <td>${st.stCode}</td>
- <td>${st.fullName()}</td>
- <td>${st.stField}</td>
- <td><button onclick="fillEditStudent(${st.stCode})">Edit</button></td>
- <td><button onclick="deleteStudentById(${st.stCode})">Delete</button></td>
- <td><button>select course</button></td>
-</tr>`;
+                    tblStu +=
+                        `<tr>
+                    <td>${idx++}</td>
+                    <td>${st.stCode}</td>
+                    <td>${st.fullName()}</td>
+                    <td>${st.stField}</td>
+                    <td><button onclick="fillEditStudent(${st.stCode})">Edit</button></td>
+                    <td><button onclick="deleteStudentById(${st.stCode})">Delete</button></td>
+                    <td><button>select course</button></td>
+                    </tr>`;
                 }
                 tblStu += "</table>"; // Close the table
                 document.getElementById("dtblStudent").innerHTML = tblStu; // Display the table
