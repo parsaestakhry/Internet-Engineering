@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8"> <!-- Specifies the character encoding for the HTML document -->
-    <title>Add Students and Courses</title> <!-- Title of the HTML document -->
+    <title>Add Students</title> <!-- Title of the HTML document -->
     <script>
         // JavaScript code starts here
 
@@ -40,20 +40,18 @@
             }
         }
 
-        // Define a Course class
         class Course {
-            // Constructor to initialize course properties
-            constructor(courseId, courseTitle, unitNo) {
-                this.courseId = courseId; // Course ID
-                this.courseTitle = courseTitle; // Course title
-                this.unitNo = unitNo; // Number of units
-                this.exams = []; // Array to store exams
+            constructor(courseId, courseTitle, unitNo, exams) {
+                this.courseId = courseId
+                this.courseTitle = courseTitle
+                this.unitNo = unitNo
+                this.exams = []
             }
         }
 
-        // Global arrays to store students and courses
-        let stArr = [];
-        let courseArr = [];
+
+
+
 
         // Function to create and display the student table
         function createStudentTable() {
@@ -61,52 +59,51 @@
                 document.getElementById("dtblStudent").innerHTML = "Student List is empty";
             } else {
                 // Create the table header
-                let tblStu = `<table border="1px">
-<tr>
-    <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th></th><th></th><th></th>
-</tr>`;
+                let tblStu =
+                    `<table border="1px">
+                <tr>
+                    <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th></th><th></th><th></th>
+                </tr>`;
                 let idx = 1; // Initialize row index
                 // Loop through each student and create a row in the table
                 for (let st of stArr) {
-                    tblStu += `<tr>
- <td>${idx++}</td>
- <td>${st.stCode}</td>
- <td>${st.fullName()}</td>
- <td>${st.stField}</td>
- <td><button onclick="fillEditStudent(${st.stCode})">Edit</button></td>
- <td><button onclick="deleteStudentById(${st.stCode})">Delete</button></td>
- <td><button onclick="selectCourse(${st.stCode})">Select Course</button></td>
-</tr>`;
+                    tblStu +=
+                        `<tr>
+                    <td>${idx++}</td>
+                    <td>${st.stCode}</td>
+                    <td>${st.fullName()}</td>
+                    <td>${st.stField}</td>
+                    <td><button onclick="fillEditStudent(${st.stCode})">Edit</button></td>
+                    <td><button onclick="deleteStudentById(${st.stCode})">Delete</button></td>
+                    <td><button>select course</button></td>
+                    </tr>`;
                 }
                 tblStu += "</table>"; // Close the table
                 document.getElementById("dtblStudent").innerHTML = tblStu; // Display the table
             }
         }
 
-        // Function to create and display the course table
         function createCourseTable() {
-            if (courseArr.length == 0) { // Check if the course array is empty
+            if (courseArr.length == 0) {
                 document.getElementById("dtblCourse").innerHTML = "Course List is empty";
             } else {
-                // Create the table header
                 let tblCourse = `<table border="1px">
-<tr>
-    <th>Row</th><th>Course ID</th><th>Course Title</th><th>Units</th><th></th><th></th>
-</tr>`;
-                let idx = 1; // Initialize row index
-                // Loop through each course and create a row in the table
+                <tr>
+                    <th>Row</th><th>Course Id</th><th>Course Title</th><th>Unit No</th><th></th><th></th>
+                </tr>`;
+                let idx = 1;
                 for (let course of courseArr) {
                     tblCourse += `<tr>
- <td>${idx++}</td>
- <td>${course.courseId}</td>
- <td>${course.courseTitle}</td>
- <td>${course.unitNo}</td>
- <td><button onclick="fillEditCourse(${course.courseId})">Edit</button></td>
- <td><button onclick="deleteCourseById(${course.courseId})">Delete</button></td>
-</tr>`;
+                    <td>${idx++}</td>
+                    <td>${course.courseId}</td>
+                    <td>${course.courseTitle}</td>
+                    <td>${course.unitNo}</td>
+                    <td><button onclick="fillEditCourse('${course.courseId}')">Edit</button></td>
+                    <td><button onclick="deleteCourseById('${course.courseId}')">Delete</button></td>
+                    </tr>`;
                 }
-                tblCourse += "</table>"; // Close the table
-                document.getElementById("dtblCourse").innerHTML = tblCourse; // Display the table
+                tblCourse += "</table>";
+                document.getElementById("dtblCourse").innerHTML = tblCourse;
             }
         }
 
@@ -120,15 +117,16 @@
             return null; // Return null if no student is found
         }
 
-        // Function to get a course by its ID
         function getCourseById(courseId) {
-            for (let course of courseArr) { // Loop through each course
-                if (course.courseId == courseId) { // Check if the course ID matches
-                    return course; // Return the course
+            for (let course of courseArr) {
+                if (course.courseId == courseId) {
+                    return course;
                 }
             }
-            return null; // Return null if no course is found
+            return null;
         }
+
+
 
         // Function to handle the visibility of the student form
         function handleStudentLoad(stat) {
@@ -141,12 +139,11 @@
             }
         }
 
-        // Function to handle the visibility of the course form
         function handleCourseLoad(stat) {
-            if (stat == 1) { // If stat is 1, show the add button and hide the form
+            if (stat == 1) {
                 document.getElementById("btnAddCourse").removeAttribute("disabled");
                 document.getElementById("ddfnCourse").style.display = "none";
-            } else { // If stat is not 1, hide the add button and show the form
+            } else {
                 document.getElementById("btnAddCourse").setAttribute("disabled", "disabled");
                 document.getElementById("ddfnCourse").style.display = "block";
             }
@@ -162,13 +159,12 @@
             document.getElementById("stActionType").value = "new"; // Set the action type to new
         }
 
-        // Function to handle adding a new course
         function handleAddNewCourse() {
-            handleCourseLoad(2); // Show the form
-            document.getElementById("courseId").value = ""; // Clear the course ID input
-            document.getElementById("courseTitle").value = ""; // Clear the course title input
-            document.getElementById("unitNo").value = ""; // Clear the unit number input
-            document.getElementById("courseActionType").value = "new"; // Set the action type to new
+            handleCourseLoad(2);
+            document.getElementById("courseId").value = "";
+            document.getElementById("courseTitle").value = "";
+            document.getElementById("unitNo").value = "";
+            document.getElementById("courseActionType").value = "new";
         }
 
         // Function to fill the form with the details of the student to be edited
@@ -184,15 +180,14 @@
             }
         }
 
-        // Function to fill the form with the details of the course to be edited
         function fillEditCourse(courseId) {
-            let course = getCourseById(courseId); // Get the course by ID
-            if (course != null) { // If the course is found
-                document.getElementById("courseId").value = course.courseId; // Set the course ID input
-                document.getElementById("courseTitle").value = course.courseTitle; // Set the course title input
-                document.getElementById("unitNo").value = course.unitNo; // Set the unit number input
-                document.getElementById("courseActionType").value = course.courseId; // Set the action type to the course ID
-                handleCourseLoad(2); // Show the form
+            let course = getCourseById(courseId);
+            if (course != null) {
+                document.getElementById("courseId").value = course.courseId;
+                document.getElementById("courseTitle").value = course.courseTitle;
+                document.getElementById("unitNo").value = course.unitNo;
+                document.getElementById("courseActionType").value = course.courseId;
+                handleCourseLoad(2);
             }
         }
 
@@ -219,28 +214,27 @@
             createStudentTable(); // Update the student table
         }
 
-        // Function to save a new or edited course
         function saveCourse() {
-            let actionType = document.getElementById("courseActionType").value; // Get the action type
-            if (actionType == "new") { // If the action type is new
-                let id = document.getElementById("courseId").value; // Get the course ID input
-                let title = document.getElementById("courseTitle").value; // Get the course title input
-                let units = document.getElementById("unitNo").value; // Get the unit number input
+            let actionType = document.getElementById("courseActionType").value;
+            if (actionType == "new") {
+                let courseId = document.getElementById("courseId").value;
+                let courseTitle = document.getElementById("courseTitle").value;
+                let unitNo = document.getElementById("unitNo").value;
 
-                let course = new Course(id, title, units); // Create a new course
-                courseArr.push(course); // Add the course to the array
-                console.log("New course added:", course); // Debug log
+                let course = new Course(courseId, courseTitle, unitNo);
+                courseArr.push(course);
             } else {
-                let course = getCourseById(actionType); // Get the course by ID
-                course.courseId = document.getElementById("courseId").value; // Update the course ID
-                course.courseTitle = document.getElementById("courseTitle").value; // Update the course title
-                course.unitNo = document.getElementById("unitNo").value; // Update the unit number
-                console.log("Course updated:", course); // Debug log
+                let course = getCourseById(actionType);
+                course.courseId = document.getElementById("courseId").value;
+                course.courseTitle = document.getElementById("courseTitle").value;
+                course.unitNo = document.getElementById("unitNo").value;
             }
 
-            handleCourseLoad(1); // Hide the form
-            createCourseTable(); // Update the course table
+            handleCourseLoad(1);
+            createCourseTable();
         }
+
+
 
         // Function to get the index of a student by their code
         function getStudentIndexById(stCode) {
@@ -254,16 +248,15 @@
             return idx; // Return the index
         }
 
-        // Function to get the index of a course by its ID
         function getCourseIndexById(courseId) {
-            let idx = -1; // Initialize the index to -1
-            for (let i in courseArr) { // Loop through each course
-                if (courseArr[i].courseId == courseId) { // Check if the course ID matches
-                    idx = i; // Set the index
-                    break; // Break the loop
+            let idx = -1;
+            for (let i in courseArr) {
+                if (courseArr[i].courseId == courseId) {
+                    idx = i;
+                    break;
                 }
             }
-            return idx; // Return the index
+            return idx;
         }
 
         // Function to delete a student by their code
@@ -275,48 +268,12 @@
             }
         }
 
-        // Function to delete a course by its ID
         function deleteCourseById(courseId) {
-            let idx = getCourseIndexById(courseId); // Get the index of the course
-            if (idx > -1) { // If the course is found
-                courseArr.splice(idx, 1); // Remove the course from the array
-                createCourseTable(); // Update the course table
+            let idx = getCourseIndexById(courseId);
+            if (idx > -1) {
+                courseArr.splice(idx, 1);
+                createCourseTable();
             }
-        }
-
-        // Function to select a course for a student
-        function selectCourse(stCode) {
-            let student = getStudentById(stCode);
-            if (student) {
-                let courseOptions = courseArr.map(course => `<option value="${course.courseId}">${course.courseTitle}</option>`).join('');
-                let selectCourseForm = `
-                    <div id="selectCourseForm">
-                        <h3>Select Course for ${student.fullName()}</h3>
-                        <select id="courseSelect">${courseOptions}</select>
-                        <button onclick="addCourseToStudent(${stCode})">Add Course</button>
-                        <button onclick="closeSelectCourseForm()">Cancel</button>
-                    </div>
-                `;
-                document.getElementById("selectCourseContainer").innerHTML = selectCourseForm;
-                document.getElementById("selectCourseContainer").style.display = "block";
-            }
-        }
-
-        // Function to add a course to a student
-        function addCourseToStudent(stCode) {
-            let student = getStudentById(stCode);
-            let courseId = document.getElementById("courseSelect").value;
-            let course = getCourseById(courseId);
-            if (student && course) {
-                student.addCourse(course);
-                closeSelectCourseForm();
-                console.log(`Course ${course.courseTitle} added to student ${student.fullName()}`);
-            }
-        }
-
-        // Function to close the select course form
-        function closeSelectCourseForm() {
-            document.getElementById("selectCourseContainer").style.display = "none";
         }
 
     </script>
@@ -340,32 +297,30 @@
         </div>
     </div>
 
-    <div id="dCourse" style="margin-top: 50px;">
+    <div id="dCourse" style="margin-top: 30px;">
         <div id="dhdrCourse">
-            <button onclick="handleAddNewCourse()" id="btnAddCourse">Add new Course</button>
-            <!-- Button to add a new course -->
+            <button onclick="handleAddNewCourse()" id="btnAddCourse"> Add New Course </button>
         </div>
-        <div id="dtblCourse"></div> <!-- Div to display the course table -->
+        <div id="dtblCourse"></div>
         <div id="ddfnCourse">
-            Course ID: <input type="text" id="courseId"><br> <!-- Input for course ID -->
-            Course Title: <input type="text" id="courseTitle"><br> <!-- Input for course title -->
-            Units: <input type="text" id="unitNo"><br> <!-- Input for unit number -->
-            <input type="hidden" id="courseActionType"> <!-- Hidden input for action type -->
-            <button onclick="saveCourse()">Save</button> <!-- Button to save the course -->
-            <button onclick="handleCourseLoad(1)">Cancel</button> <!-- Button to cancel and hide the form -->
+            Course Id: <input type="text" id="courseId"><br>
+            Course Title: <input type="text" id="courseTitle"><br>
+            Unit No: <input type="text" id="unitNo"><br>
+            <input type="hidden" id="courseActionType">
+            <button onclick="saveCourse()">Save</button>
+            <button onclick="handleCourseLoad(1)">Cancel</button>
         </div>
-    </div>
 
-    <div id="selectCourseContainer" style="display:none;"></div>
+    </div>
 </body>
 
 </html>
 
 <script>
     stArr = []; // Initialize an empty array to store students
-    courseArr = []; // Initialize an empty array to store courses
-    handleStudentLoad(1); // Hide the student form initially
+    courseArr = [] // empty array for course 
+    handleStudentLoad(1); // Hide the form initially
+    handleCourseLoad(1); // Hide the form initially
     createStudentTable(); // Create the initial student table
-    handleCourseLoad(1); // Hide the course form initially
     createCourseTable(); // Create the initial course table
 </script>
