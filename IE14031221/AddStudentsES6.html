@@ -73,9 +73,9 @@
                     <td>${st.stCode}</td>
                     <td>${st.fullName()}</td>
                     <td>${st.stField}</td>
-                    <td><button onclick="fillEditStudent(${st.stCode})">Edit</button></td>
-                    <td><button onclick="deleteStudentById(${st.stCode})">Delete</button></td>
-                    <td><button>select course</button></td>
+                    <td><button onclick="fillEditStudent('${st.stCode}')">Edit</button></td>
+                    <td><button onclick="deleteStudentById('${st.stCode}')">Delete</button></td>
+                    <td><button onclick="selectCourseForStudent('${st.stCode}')">Select Course</button></td>
                     </tr>`;
                 }
                 tblStu += "</table>"; // Close the table
