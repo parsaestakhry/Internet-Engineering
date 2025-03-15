@@ -75,7 +75,7 @@
  <td>${st.stField}</td>
  <td><button onclick="fillEditStudent(${st.stCode})">Edit</button></td>
  <td><button onclick="deleteStudentById(${st.stCode})">Delete</button></td>
- <td><button>select course</button></td>
+ <td><button onclick="selectCourse(${st.stCode})">Select Course</button></td>
 </tr>`;
                 }
                 tblStu += "</table>"; // Close the table
@@ -284,6 +284,41 @@
             }
         }
 
+        // Function to select a course for a student
+        function selectCourse(stCode) {
+            let student = getStudentById(stCode);
+            if (student) {
+                let courseOptions = courseArr.map(course => `<option value="${course.courseId}">${course.courseTitle}</option>`).join('');
+                let selectCourseForm = `
+                    <div id="selectCourseForm">
+                        <h3>Select Course for ${student.fullName()}</h3>
+                        <select id="courseSelect">${courseOptions}</select>
+                        <button onclick="addCourseToStudent(${stCode})">Add Course</button>
+                        <button onclick="closeSelectCourseForm()">Cancel</button>
+                    </div>
+                `;
+                document.getElementById("selectCourseContainer").innerHTML = selectCourseForm;
+                document.getElementById("selectCourseContainer").style.display = "block";
+            }
+        }
+
+        // Function to add a course to a student
+        function addCourseToStudent(stCode) {
+            let student = getStudentById(stCode);
+            let courseId = document.getElementById("courseSelect").value;
+            let course = getCourseById(courseId);
+            if (student && course) {
+                student.addCourse(course);
+                closeSelectCourseForm();
+                console.log(`Course ${course.courseTitle} added to student ${student.fullName()}`);
+            }
+        }
+
+        // Function to close the select course form
+        function closeSelectCourseForm() {
+            document.getElementById("selectCourseContainer").style.display = "none";
+        }
+
     </script>
 </head>
 
@@ -320,6 +355,8 @@
             <button onclick="handleCourseLoad(1)">Cancel</button> <!-- Button to cancel and hide the form -->
         </div>
     </div>
+
+    <div id="selectCourseContainer" style="display:none;"></div>
 </body>
 
 </html>
