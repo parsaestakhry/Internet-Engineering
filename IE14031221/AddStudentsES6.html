@@ -61,7 +61,7 @@
         }
 
 
-        
+
 
 
 
@@ -75,17 +75,19 @@
                 let tblStu =
                     `<table border="1px">
                 <tr>
-                    <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th></th><th></th><th></th>
+                    <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th>Selected Courses</th><th></th><th></th><th></th>
                 </tr>`;
                 let idx = 1; // Initialize row index
                 // Loop through each student and create a row in the table
                 for (let st of stArr) {
+                    let selectedCourses = st.selectedCourses.map(course => course.courseTitle).join(", ");
                     tblStu +=
                         `<tr>
                     <td>${idx++}</td>
                     <td>${st.stCode}</td>
                     <td>${st.fullName()}</td>
                     <td>${st.stField}</td>
+                    <td>${selectedCourses}</td>
                     <td><button onclick="fillEditStudent('${st.stCode}')">Edit</button></td>
                     <td><button onclick="deleteStudentById('${st.stCode}')">Delete</button></td>
                     <td><button onclick="selectCourseForStudent('${st.stCode}')">Select Course</button></td>
@@ -100,23 +102,23 @@
             if (courseArr.length == 0) {
                 document.getElementById("dtblCourse").innerHTML = "Course List is empty";
             } else {
-                let tblExam = `<table border="1px">
+                let tblCourse = `<table border="1px">
                 <tr>
                     <th>Row</th><th>Course Id</th><th>Course Title</th><th>Unit No</th><th>Percent</th><th></th><th></th>
                 </tr>`;
                 let idx = 1;
-                for (let exam of examArr) {
-                    tblExam += `<tr>
+                for (let course of courseArr) {
+                    tblCourse += `<tr>
                     <td>${idx++}</td>
-                    <td>${exam.examId}</td>
-                    <td>${exam.examTitle}</td>
-                    <td>${exam.percent}</td>
-                    <td><button onclick="fillEditCourse('${exam.examId}')">Edit</button></td>
-                    <td><button onclick="deleteCourseById('${exam.examId}')">Delete</button></td>
+                    <td>${course.courseId}</td>
+                    <td>${course.courseTitle}</td>
+                    <td>${course.unitNo}</td>
+                    <td><button onclick="fillEditCourse('${course.courseId}')">Edit</button></td>
+                    <td><button onclick="deleteCourseById('${course.courseId}')">Delete</button></td>
                     </tr>`;
                 }
-                tblExam += "</table>";
-                document.getElementById("dtblCourse").innerHTML = tblExam;
+                tblCourse += "</table>";
+                document.getElementById("dtblCourse").innerHTML = tblCourse;
             }
         }
 
@@ -162,16 +164,16 @@
             }
             return null;
         }
-        
 
-        function getExamById(examId){
+
+        function getExamById(examId) {
             for (let exam of examArr) {
                 if (exam.examId == examId) {
                     return exam
                 }
             }
 
-            return null 
+            return null
         }
 
 
@@ -235,7 +237,7 @@
             document.getElementById("percent").value = "";
             document.getElementById("examActionType").value = "new";
         }
-        
+
         // Function to fill the form with the details of the student to be edited
         function fillEditStudent(stCode) {
             let st = getStudentById(stCode); // Get the student by code
@@ -339,6 +341,24 @@
 
             handleExamLoad(1);
             createExamTable();
+        }
+
+
+        function selectCourseForStudent(stCode) {
+            let st = getStudentById(stCode);
+            if (st != null) {
+                let courseId = prompt("Enter Course ID to select for the student:");
+                let course = getCourseById(courseId);
+                if (course != null) {
+                    st.addCourse(course);
+                    alert(`Course ${course.courseTitle} added to student ${st.fullName()}`);
+                    createStudentTable(); // Update the student table to reflect the changes
+                } else {
+                    alert("Course not found!");
+                }
+            } else {
+                alert("Student not found!");
+            }
         }
 
 
