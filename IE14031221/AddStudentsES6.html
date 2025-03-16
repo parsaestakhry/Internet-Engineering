@@ -63,6 +63,29 @@
         }
 
 
+        class Questions {
+            constructor(questionId, questionNo, questionDate, questionTitle, options, examId) {
+                this.questionId = questionId
+                this.questionNo = questionNo
+                this.questionDate = questionDate
+                this.questionTitle = questionTitle
+
+                this.options = []
+                this.examId = examId
+            }
+        }
+
+
+        class Options {
+            constructor(optionId, optionNo, optionTitle, questionId){
+                this.optionId = optionId
+                this.optionNo = optionNo
+                this.optionTitle = optionTitle
+                this.questionId = questionId
+            }
+        }
+
+
 
 
 
@@ -150,6 +173,55 @@
             }
         }
 
+        function createQuestionTable() {
+            if (questionArr.length == 0) {
+                document.getElementById("dtblQuestion").innerHTML = "Question List is Empty";
+            } else {
+                let tblQuestion = `<table border="1px">
+                <tr>
+                    <th>Row</th><th>Question Id</th><th>Question No</th><th>Question Date</th><th>Question Title</th><th></th><th></th>
+                </tr>`;
+                let idx = 1;
+                for (let question of questionArr) {
+                    tblQuestion += `<tr>
+                    <td>${idx++}</td>
+                    <td>${question.questionId}</td>
+                    <td>${question.questionNo}</td>
+                    <td>${question.questionDate}</td>
+                    <td>${question.questionTitle}</td>
+                    <td><button onclick="fillEditQuestion('${question.questionId}')">Edit</button></td>
+                    <td><button onclick="deleteQuestionById('${question.questionId}')">Delete</button></td>
+                    </tr>`;
+                }
+                tblQuestion += "</table>";
+                document.getElementById("dtblQuestion").innerHTML = tblQuestion;
+            }
+        }
+
+        function createOptionTable() {
+            if (optionArr.length == 0) {
+                document.getElementById("dtblOption").innerHTML = "Option List is Empty";
+            } else {
+                let tblOption = `<table border="1px">
+                <tr>
+                    <th>Row</th><th>Option Id</th><th>Option No</th><th>Option Title</th><th></th><th></th>
+                </tr>`;
+                let idx = 1;
+                for (let option of optionArr) {
+                    tblOption += `<tr>
+                    <td>${idx++}</td>
+                    <td>${option.optionId}</td>
+                    <td>${option.optionNo}</td>
+                    <td>${option.optionTitle}</td>
+                    <td><button onclick="fillEditOption('${option.optionId}')">Edit</button></td>
+                    <td><button onclick="deleteOptionById('${option.optionId}')">Delete</button></td>
+                    </tr>`;
+                }
+                tblOption += "</table>";
+                document.getElementById("dtblOption").innerHTML = tblOption;
+            }
+        }
+
         // Function to get a student by their code
         function getStudentById(stCode) {
             for (let st of stArr) { // Loop through each student
@@ -179,6 +251,25 @@
 
             return null
         }
+
+        function getQuestionById(questionId) {
+            for (let question of questionArr) {
+                if (question.questionId == questionId) {
+                    return question
+                }
+            }
+            return null
+        }
+
+        function getOptionById(optionId) {
+            for (let option of optionArr) {
+                if (option.optionId == optionId) {
+                    return option
+                }
+            }
+            return null}
+
+        
 
 
         // Function to handle the visibility of the student form
@@ -212,6 +303,25 @@
             }
         }
 
+        function handleQuestionLoad(stat) {
+            if (stat == 1) {
+                document.getElementById("btnAddQuestion").removeAttribute("disabled");
+                document.getElementById("ddfnQuestion").style.display = "none";
+            } else {
+                document.getElementById("btnAddQuestion").setAttribute("disabled", "disabled");
+                document.getElementById("ddfnQuestion").style.display = "block";
+            }
+        }
+
+        function handleOptionLoad(stat) {
+            if (stat == 1) {
+                document.getElementById("btnAddOption").removeAttribute("disabled");
+                document.getElementById("ddfnOption").style.display = "none";
+            } else {
+                document.getElementById("btnAddOption").setAttribute("disabled", "disabled");
+                document.getElementById("ddfnOption").style.display = "block";
+            }
+        }
 
 
         // Function to handle adding a new student
@@ -243,6 +353,27 @@
             document.getElementById("examActionType").value = "new";
 
         }
+
+
+        function handleAddNewQuestion() {
+            handleQuestionLoad(2);
+            document.getElementById("questionId").value = "";
+            document.getElementById("questionNo").value = "";
+            document.getElementById("questionDate").value = "";
+            document.getElementById("questionTitle").value = "";
+            document.getElementById("examId").value = "";
+            document.getElementById("questionActionType").value = "new";
+
+        }
+
+
+        function handleAddNewOption() {
+            handleOptionLoad(2);
+            document.getElementById("optionId").value = "";
+            document.getElementById("optionNo").value = "";
+            document.getElementById("optionTitle").value = "";
+            document.getElementById("questionId").value = "";
+            document.getElementById("optionActionType").value = "new";}
 
         // Function to fill the form with the details of the student to be edited
         function fillEditStudent(stCode) {
@@ -278,6 +409,32 @@
                 document.getElementById("courseId").value = exam.courseId;
                 document.getElementById("examActionType").value = exam.examId;
                 handleExamLoad(2);
+            }
+        }
+
+        function fillEditQuestion(questionId) {
+            let question = getQuestionById(questionId);
+            if (question != null) {
+                document.getElementById("questionId").value = question.questionId;
+                document.getElementById("questionNo").value = question.questionNo;
+                document.getElementById("questionDate").value = question.questionDate;
+                document.getElementById("questionTitle").value = question.questionTitle;
+                document.getElementById("examId").value = question.examId;
+                document.getElementById("questionActionType").value = question.questionId;
+                handleQuestionLoad(2);
+            }
+        }
+
+
+        function fillEditOption(optionId) {
+            let option = getOptionById(optionId);
+            if (option != null) {
+                document.getElementById("optionId").value = option.optionId;
+                document.getElementById("optionNo").value = option.optionNo;
+                document.getElementById("optionTitle").value = option.optionTitle;
+                document.getElementById("questionId").value = option.questionId;
+                document.getElementById("optionActionType").value = option.optionId;
+                handleOptionLoad(2);
             }
         }
 
@@ -333,7 +490,7 @@
                 let examDate = document.getElementById("examDate").value;
                 let percent = document.getElementById("percent").value;
                 let courseId = document.getElementById("courseId").value;
-                let exam = new Exam(examId, examTitle, examDate, percent,[], courseId);
+                let exam = new Exam(examId, examTitle, examDate, percent, [], courseId);
                 let course = getCourseById(courseId)
                 console.log(course)
                 if (course !== undefined || course !== null) {
@@ -354,6 +511,56 @@
 
             handleExamLoad(1);
             createExamTable();
+        }
+
+        function saveQuestion() {
+            let actionType = document.getElementById("questionActionType").value;
+            if (actionType == "new") {
+                let questionId = document.getElementById("questionId").value;
+                let questionNo = document.getElementById("questionNo").value;
+                let questionDate = document.getElementById("questionDate").value;
+                let questionTitle = document.getElementById("questionTitle").value;
+                let examId = document.getElementById("examId").value;
+                let question = new Questions(questionId, questionNo, questionDate, questionTitle, [], examId);
+                let exam = getExamById(examId)
+                if (exam !== undefined || exam !== null) {
+                    questionArr.push(question);
+                    exam.questions.push(question)
+                }
+            } else {
+                let question = getQuestionById(actionType);
+                question.questionId = document.getElementById("questionId").value;
+                question.questionNo = document.getElementById("questionNo").value;
+                question.questionDate = document.getElementById("questionDate").value;
+                question.questionTitle = document.getElementById("questionTitle").value;
+            }
+
+            handleQuestionLoad(1);
+            createQuestionTable();
+        }
+
+        function saveOption() {
+            let actionType = document.getElementById("optionActionType").value;
+            if (actionType == "new") {
+                let optionId = document.getElementById("optionId").value;
+                let optionNo = document.getElementById("optionNo").value;
+                let optionTitle = document.getElementById("optionTitle").value;
+                let questionId = document.getElementById("questionId").value;
+                let option = new Options(optionId, optionNo, optionTitle, questionId);
+                let question = getQuestionById(questionId);
+                if (question !== undefined || question !== null) {
+                    optionArr.push(option);
+                    question.options.push(option)
+                }
+            } else {
+                let option = getOptionById(actionType);
+                option.optionId = document.getElementById("optionId").value;
+                option.optionNo = document.getElementById("optionNo").value;
+                option.optionTitle = document.getElementById("optionTitle").value;
+            }
+
+            handleOptionLoad(1);
+            createOptionTable();
         }
 
 
@@ -411,6 +618,28 @@
             return idx;
         }
 
+        function getQuestionIndexById(questionId) {
+            let idx = -1;
+            for (let i in questionArr) {
+                if (questionArr[i].questionId == questionId) {
+                    idx = i;
+                    break;
+                }
+            }
+            return idx;
+        }
+
+
+        function getOptionIndexById(optionId) {
+            let idx = -1;
+            for (let i in optionArr) {
+                if (optionArr[i].optionId == optionId) {
+                    idx = i;
+                    break;
+                }
+            }
+            return idx; }
+
         // Function to delete a student by their code
         function deleteStudentById(stCode) {
             let idx = getStudentIndexById(stCode); // Get the index of the student
@@ -434,6 +663,22 @@
             if (idx > -1) {
                 examArr.splice(idx, 1);
                 createExamTable();
+            }
+        }
+
+        function deleteQuestionById(questionId) {
+            let idx = getQuestionIndexById(questionId);
+            if (idx > -1) {
+                questionArr.splice(idx, 1);
+                createQuestionTable();
+            }
+        }
+
+        function deleteOptionById(optionId) {
+            let idx = getOptionIndexById(optionId);
+            if (idx > -1) {
+                optionArr.splice(idx, 1);
+                createOptionTable();
             }
         }
 
@@ -491,6 +736,39 @@
         </div>
 
     </div>
+
+    <div id="dQuestion" style="margin-top: 30px;">
+        <div id="dhdrQuestion">
+            <button onclick="handleAddNewQuestion()" id="btnAddQuestion"> Add New Question </button>
+        </div>
+        <div id="dtblQuestion"></div>
+        <div id="ddfnQuestion">
+            Question Id: <input type="text" id="questionId"><br>
+            Question No: <input type="text" id="questionNo"><br>
+            Question Date: <input type="text" id="questionDate"><br>
+            Question Title: <input type="text" id="questionTitle"><br>
+            Exam Id: <input type="text" id="examId"><br>
+            <input type="hidden" id="questionActionType">
+            <button onclick="saveQuestion()">Save</button>
+            <button onclick="handleQuestionLoad(1)">Cancel</button>
+        </div>
+    </div>
+
+    <div id="dOption" style="margin-top: 30px;">
+        <div id="dhdrOption">
+            <button onclick="handleAddNewOption()" id="btnAddOption"> Add New Option </button>
+        </div>
+        <div id="dtblOption"></div>
+        <div id="ddfnOption">
+            Option Id: <input type="text" id="optionId"><br>
+            Option No: <input type="text" id="optionNo"><br>
+            Option Title: <input type="text" id="optionTitle"><br>
+            Question Id: <input type="text" id="questionId"><br>
+            <input type="hidden" id="optionActionType">
+            <button onclick="saveOption()">Save</button>
+            <button onclick="handleOptionLoad(1)">Cancel</button>
+        </div>
+    </div>
 </body>
 
 </html>
@@ -499,10 +777,16 @@
     stArr = []; // Initialize an empty array to store students
     courseArr = [] // empty array for course 
     examArr = [] // empty array for exam
+    questionArr = [] // empty array
+    optionArr = [] // empty array
     handleStudentLoad(1); // Hide the form initially
     handleCourseLoad(1); // Hide the form initially
     handleExamLoad(1); // Hide the form initially
+    handleOptionLoad(1); // Hide the form initially
+    handleQuestionLoad(1)
     createStudentTable(); // Create the initial student table
     createCourseTable(); // Create the initial course table
     createExamTable(); // Create the initial exam table
+    createQuestionTable(); // Create the initial question table
+    createOptionTable()
 </script>
