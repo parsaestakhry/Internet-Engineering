@@ -47,16 +47,18 @@
                 this.unitNo = unitNo
                 this.exams = []
             }
+
         }
 
 
         class Exam {
-            constructor(examId, examTitle, examDate, percent, questions) {
+            constructor(examId, examTitle, examDate, percent, questions, courseId) {
                 this.examId = examId
                 this.examDate = examDate
                 this.percent = percent
                 this.questions = []
                 this.examTitle = examTitle
+                this.courseId = courseId
             }
         }
 
@@ -104,7 +106,7 @@
             } else {
                 let tblCourse = `<table border="1px">
                 <tr>
-                    <th>Row</th><th>Course Id</th><th>Course Title</th><th>Unit No</th><th>Percent</th><th></th><th></th>
+                    <th>Row</th><th>Course Id</th><th>Course Title</th><th>Unit No</th><th></th> <th></th>
                 </tr>`;
                 let idx = 1;
                 for (let course of courseArr) {
@@ -124,11 +126,11 @@
 
         function createExamTable() {
             if (examArr.length == 0) {
-                document.getElementById("dtblExam").innerHTML = "Exam List is Empty"
+                document.getElementById("dtblExam").innerHTML = "Exam List is Empty";
             } else {
                 let tblExam = `<table border="1px">
                 <tr>
-                    <th>Row</th><th>Exam Id</th><th>Exam Title</th><th>Exam Date</th><th></th><th></th>
+                    <th>Row</th><th>Exam Id</th><th>Exam Title</th><th>Exam Date</th><th>Percent</th><th>Course Id</th><th></th><th></th>
                 </tr>`;
                 let idx = 1;
                 for (let exam of examArr) {
@@ -137,6 +139,8 @@
                     <td>${exam.examId}</td>
                     <td>${exam.examTitle}</td>
                     <td>${exam.examDate}</td>
+                    <td>${exam.percent}</td>
+                    <td>${exam.courseId}</td>
                     <td><button onclick="fillEditExam('${exam.examId}')">Edit</button></td>
                     <td><button onclick="deleteExamById('${exam.examId}')">Delete</button></td>
                     </tr>`;
@@ -235,7 +239,9 @@
             document.getElementById("examTitle").value = "";
             document.getElementById("examDate").value = "";
             document.getElementById("percent").value = "";
+            document.getElementById("courseId").value = ""
             document.getElementById("examActionType").value = "new";
+
         }
 
         // Function to fill the form with the details of the student to be edited
@@ -269,6 +275,7 @@
                 document.getElementById("examTitle").value = exam.examTitle;
                 document.getElementById("examDate").value = exam.examDate;
                 document.getElementById("percent").value = exam.percent;
+                document.getElementById("courseId").value = exam.courseId;
                 document.getElementById("examActionType").value = exam.examId;
                 handleExamLoad(2);
             }
@@ -325,12 +332,18 @@
                 let examTitle = document.getElementById("examTitle").value;
                 let examDate = document.getElementById("examDate").value;
                 let percent = document.getElementById("percent").value;
+                let courseId = document.getElementById("courseId").value;
+                let exam = new Exam(examId, examTitle, examDate, percent,[], courseId);
+                let course = getCourseById(courseId)
+                console.log(course)
+                if (course !== undefined || course !== null) {
+                    examArr.push(exam);
+                    course.exams.push(exam)
 
-                let exam = new Exam(examId, examTitle, examDate, percent);
+                    console.log(course)
+                }
 
-                console.log(exam)
 
-                examArr.push(exam);
             } else {
                 let exam = getExamById(actionType);
                 exam.examId = document.getElementById("examId").value;
@@ -471,6 +484,7 @@
             Exam Title: <input type="text" id="examTitle"><br>
             Exam Date: <input type="text" id="examDate"><br>
             Percent: <input type="text" id="percent"><br>
+            Course Id: <input type="text" id="courseId"><br>
             <input type="hidden" id="examActionType">
             <button onclick="saveExam()">Save</button>
             <button onclick="handleExamLoad(1)">Cancel</button>
