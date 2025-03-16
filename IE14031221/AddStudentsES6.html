@@ -50,6 +50,19 @@
         }
 
 
+        class Exam {
+            constructor(examId, examTitle, examDate, percent, questions) {
+                this.examId = examId
+                this.examDate = examDate
+                this.percent = percent
+                this.questions = []
+                this.examTitle = examTitle
+            }
+        }
+
+
+        
+
 
 
 
@@ -87,23 +100,47 @@
             if (courseArr.length == 0) {
                 document.getElementById("dtblCourse").innerHTML = "Course List is empty";
             } else {
-                let tblCourse = `<table border="1px">
+                let tblExam = `<table border="1px">
                 <tr>
-                    <th>Row</th><th>Course Id</th><th>Course Title</th><th>Unit No</th><th></th><th></th>
+                    <th>Row</th><th>Course Id</th><th>Course Title</th><th>Unit No</th><th>Percent</th><th></th><th></th>
                 </tr>`;
                 let idx = 1;
-                for (let course of courseArr) {
-                    tblCourse += `<tr>
+                for (let exam of examArr) {
+                    tblExam += `<tr>
                     <td>${idx++}</td>
-                    <td>${course.courseId}</td>
-                    <td>${course.courseTitle}</td>
-                    <td>${course.unitNo}</td>
-                    <td><button onclick="fillEditCourse('${course.courseId}')">Edit</button></td>
-                    <td><button onclick="deleteCourseById('${course.courseId}')">Delete</button></td>
+                    <td>${exam.examId}</td>
+                    <td>${exam.examTitle}</td>
+                    <td>${exam.percent}</td>
+                    <td><button onclick="fillEditCourse('${exam.examId}')">Edit</button></td>
+                    <td><button onclick="deleteCourseById('${exam.examId}')">Delete</button></td>
                     </tr>`;
                 }
-                tblCourse += "</table>";
-                document.getElementById("dtblCourse").innerHTML = tblCourse;
+                tblExam += "</table>";
+                document.getElementById("dtblCourse").innerHTML = tblExam;
+            }
+        }
+
+        function createExamTable() {
+            if (examArr.length == 0) {
+                document.getElementById("dtblExam").innerHTML = "Exam List is Empty"
+            } else {
+                let tblExam = `<table border="1px">
+                <tr>
+                    <th>Row</th><th>Exam Id</th><th>Exam Title</th><th>Exam Date</th><th></th><th></th>
+                </tr>`;
+                let idx = 1;
+                for (let exam of examArr) {
+                    tblExam += `<tr>
+                    <td>${idx++}</td>
+                    <td>${exam.examId}</td>
+                    <td>${exam.examTitle}</td>
+                    <td>${exam.examDate}</td>
+                    <td><button onclick="fillEditExam('${exam.examId}')">Edit</button></td>
+                    <td><button onclick="deleteExamById('${exam.examId}')">Delete</button></td>
+                    </tr>`;
+                }
+                tblExam += "</table>";
+                document.getElementById("dtblExam").innerHTML = tblExam;
             }
         }
 
@@ -125,7 +162,17 @@
             }
             return null;
         }
+        
 
+        function getExamById(examId){
+            for (let exam of examArr) {
+                if (exam.examId == examId) {
+                    return exam
+                }
+            }
+
+            return null 
+        }
 
 
         // Function to handle the visibility of the student form
@@ -149,6 +196,18 @@
             }
         }
 
+        function handleExamLoad(stat) {
+            if (stat == 1) {
+                document.getElementById("btnAddExam").removeAttribute("disabled");
+                document.getElementById("ddfnExam").style.display = "none";
+            } else {
+                document.getElementById("btnAddExam").setAttribute("disabled", "disabled");
+                document.getElementById("ddfnExam").style.display = "block";
+            }
+        }
+
+
+
         // Function to handle adding a new student
         function handleAddNewStudent() {
             handleStudentLoad(2); // Show the form
@@ -167,6 +226,16 @@
             document.getElementById("courseActionType").value = "new";
         }
 
+
+        function handleAddNewExam() {
+            handleExamLoad(2);
+            document.getElementById("examId").value = "";
+            document.getElementById("examTitle").value = "";
+            document.getElementById("examDate").value = "";
+            document.getElementById("percent").value = "";
+            document.getElementById("examActionType").value = "new";
+        }
+        
         // Function to fill the form with the details of the student to be edited
         function fillEditStudent(stCode) {
             let st = getStudentById(stCode); // Get the student by code
@@ -188,6 +257,18 @@
                 document.getElementById("unitNo").value = course.unitNo;
                 document.getElementById("courseActionType").value = course.courseId;
                 handleCourseLoad(2);
+            }
+        }
+
+        function fillEditExam(examId) {
+            let exam = getExamById(examId);
+            if (exam != null) {
+                document.getElementById("examId").value = exam.examId;
+                document.getElementById("examTitle").value = exam.examTitle;
+                document.getElementById("examDate").value = exam.examDate;
+                document.getElementById("percent").value = exam.percent;
+                document.getElementById("examActionType").value = exam.examId;
+                handleExamLoad(2);
             }
         }
 
@@ -235,6 +316,33 @@
         }
 
 
+        function saveExam() {
+            let actionType = document.getElementById("examActionType").value;
+            if (actionType == "new") {
+                let examId = document.getElementById("examId").value;
+                let examTitle = document.getElementById("examTitle").value;
+                let examDate = document.getElementById("examDate").value;
+                let percent = document.getElementById("percent").value;
+
+                let exam = new Exam(examId, examTitle, examDate, percent);
+
+                console.log(exam)
+
+                examArr.push(exam);
+            } else {
+                let exam = getExamById(actionType);
+                exam.examId = document.getElementById("examId").value;
+                exam.examTitle = document.getElementById("examTitle").value;
+                exam.examDate = document.getElementById("examDate").value;
+                exam.percent = document.getElementById("percent").value;
+            }
+
+            handleExamLoad(1);
+            createExamTable();
+        }
+
+
+
 
         // Function to get the index of a student by their code
         function getStudentIndexById(stCode) {
@@ -259,6 +367,17 @@
             return idx;
         }
 
+        function getExamIndexById(examId) {
+            let idx = -1;
+            for (let i in examArr) {
+                if (examArr[i].examId == examId) {
+                    idx = i;
+                    break;
+                }
+            }
+            return idx;
+        }
+
         // Function to delete a student by their code
         function deleteStudentById(stCode) {
             let idx = getStudentIndexById(stCode); // Get the index of the student
@@ -273,6 +392,15 @@
             if (idx > -1) {
                 courseArr.splice(idx, 1);
                 createCourseTable();
+            }
+        }
+
+        function deleteExamById(examId) {
+            let idx = getExamIndexById(examId);
+            console.log(idx)
+            if (idx > -1) {
+                examArr.splice(idx, 1);
+                createExamTable();
             }
         }
 
@@ -312,6 +440,23 @@
         </div>
 
     </div>
+
+    <div id="dExam" style="margin-top: 30px;">
+        <div id="dhdrExam">
+            <button onclick="handleAddNewExam()" id="btnAddExam"> Add New Exam </button>
+        </div>
+        <div id="dtblExam"></div>
+        <div id="ddfnExam">
+            Exam Id: <input type="text" id="examId"><br>
+            Exam Title: <input type="text" id="examTitle"><br>
+            Exam Date: <input type="text" id="examDate"><br>
+            Percent: <input type="text" id="percent"><br>
+            <input type="hidden" id="examActionType">
+            <button onclick="saveExam()">Save</button>
+            <button onclick="handleExamLoad(1)">Cancel</button>
+        </div>
+
+    </div>
 </body>
 
 </html>
@@ -319,8 +464,11 @@
 <script>
     stArr = []; // Initialize an empty array to store students
     courseArr = [] // empty array for course 
+    examArr = [] // empty array for exam
     handleStudentLoad(1); // Hide the form initially
     handleCourseLoad(1); // Hide the form initially
+    handleExamLoad(1); // Hide the form initially
     createStudentTable(); // Create the initial student table
     createCourseTable(); // Create the initial course table
+    createExamTable(); // Create the initial exam table
 </script>
