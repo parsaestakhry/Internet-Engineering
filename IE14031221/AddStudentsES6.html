@@ -77,7 +77,7 @@
 
 
         class Options {
-            constructor(optionId, optionNo, optionTitle, questionId){
+            constructor(optionId, optionNo, optionTitle, questionId) {
                 this.optionId = optionId
                 this.optionNo = optionNo
                 this.optionTitle = optionTitle
@@ -86,7 +86,7 @@
         }
 
 
-        class Student_Exam{
+        class Student_Exam {
             constructor(stCodeExamId, examId, stCode, result) {
                 this.stCodeExamId = stCodeExamId
                 this.examId = examId
@@ -97,7 +97,7 @@
 
 
         class Result {
-            constructor(resultId, option, answerOption,stCodeExamId) {
+            constructor(resultId, option, answerOption, stCodeExamId) {
                 this.resultId = resultId
                 this.option = []
                 this.answerOption = answerOption
@@ -106,7 +106,7 @@
         }
 
 
-       
+
 
 
 
@@ -247,6 +247,35 @@
             }
         }
 
+
+
+        function createResultTable() {
+            if (resultArr.length == 0) {
+                document.getElementById("dtblResult").innerHTML = "Result List is Empty";
+            } else {
+                let tblResult = `<table border="1px">
+                <tr>
+                    <th>Row</th><th>Result Id</th><th>Option</th><th>Answer Option</th><th>Student Exam Id</th><th></th>
+                </tr>`;
+                let idx = 1;
+                for (let result of resultArr) {
+                    tblResult += `<tr>
+                    <td>${idx++}</td>
+                    <td>${result.resultId}</td>
+                    <td>${result.option}</td>
+                    <td>${result.answerOption}</td>
+                    <td>${result.stCodeExamId}</td>
+                    <td><button onclick="fillEditResult('${result.resultId}')">Edit</button></td>
+                    <td><button onclick="deleteResultById('${result.resultId}')">Delete</button></td>
+                    </tr>`;
+                }
+                tblResult += "</table>";
+                document.getElementById("dtblResult").innerHTML = tblResult;
+            }
+        }
+
+
+
         // Function to get a student by their code
         function getStudentById(stCode) {
             for (let st of stArr) { // Loop through each student
@@ -292,9 +321,12 @@
                     return option
                 }
             }
-            return null}
+            return null
+        }
 
         
+
+
 
 
         // Function to handle the visibility of the student form
@@ -398,7 +430,8 @@
             document.getElementById("optionNo").value = "";
             document.getElementById("optionTitle").value = "";
             document.getElementById("questionIdOption").value = "";
-            document.getElementById("optionActionType").value = "new";}
+            document.getElementById("optionActionType").value = "new";
+        }
 
         // Function to fill the form with the details of the student to be edited
         function fillEditStudent(stCode) {
@@ -518,7 +551,7 @@
                 let exam = new Exam(examId, examTitle, examDate, percent, [], courseId);
                 let course = getCourseById(courseId)
                 console.log(courseId)
-                
+
                 if (course !== undefined || course !== null) {
                     examArr.push(exam);
                     course.exams.push(exam)
@@ -664,7 +697,8 @@
                     break;
                 }
             }
-            return idx; }
+            return idx;
+        }
 
         // Function to delete a student by their code
         function deleteStudentById(stCode) {
