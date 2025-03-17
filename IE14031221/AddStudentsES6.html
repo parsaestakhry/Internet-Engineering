@@ -86,6 +86,18 @@
         }
 
 
+        class Student_Exam{
+            constructor(examId, stCode, result) {
+                this.examId = examId
+                this.stCode = stCode
+                this.result = []
+            }
+        }
+
+
+        
+
+
        
 
 
@@ -182,7 +194,7 @@
             } else {
                 let tblQuestion = `<table border="1px">
                 <tr>
-                    <th>Row</th><th>Question Id</th><th>Question No</th><th>Question Date</th><th>Question Title</th><th></th><th></th>
+                    <th>Row</th><th>Question Id</th><th>Question No</th><th>Question Date</th><th>Question Title</th><th>Exam Id</th><th></th><th></th>
                 </tr>`;
                 let idx = 1;
                 for (let question of questionArr) {
@@ -192,6 +204,7 @@
                     <td>${question.questionNo}</td>
                     <td>${question.questionDate}</td>
                     <td>${question.questionTitle}</td>
+                    <td>${question.examId}</td>
                     <td><button onclick="fillEditQuestion('${question.questionId}')">Edit</button></td>
                     <td><button onclick="deleteQuestionById('${question.questionId}')">Delete</button></td>
                     </tr>`;
@@ -207,7 +220,7 @@
             } else {
                 let tblOption = `<table border="1px">
                 <tr>
-                    <th>Row</th><th>Option Id</th><th>Option No</th><th>Option Title</th><th></th><th></th>
+                    <th>Row</th><th>Option Id</th><th>Option No</th><th>Option Title</th><th>Question Id</th><th></th><th></th>
                 </tr>`;
                 let idx = 1;
                 for (let option of optionArr) {
@@ -216,6 +229,7 @@
                     <td>${option.optionId}</td>
                     <td>${option.optionNo}</td>
                     <td>${option.optionTitle}</td>
+                    <td>${option.questionId}</td>
                     <td><button onclick="fillEditOption('${option.optionId}')">Edit</button></td>
                     <td><button onclick="deleteOptionById('${option.optionId}')">Delete</button></td>
                     </tr>`;
@@ -352,7 +366,7 @@
             document.getElementById("examTitle").value = "";
             document.getElementById("examDate").value = "";
             document.getElementById("percent").value = "";
-            document.getElementById("courseId").value = ""
+            document.getElementById("courseIdExam").value = ""
             document.getElementById("examActionType").value = "new";
 
         }
@@ -364,7 +378,7 @@
             document.getElementById("questionNo").value = "";
             document.getElementById("questionDate").value = "";
             document.getElementById("questionTitle").value = "";
-            document.getElementById("examId").value = "";
+            document.getElementById("examIdQuestion").value = "";
             document.getElementById("questionActionType").value = "new";
 
         }
@@ -375,7 +389,7 @@
             document.getElementById("optionId").value = "";
             document.getElementById("optionNo").value = "";
             document.getElementById("optionTitle").value = "";
-            document.getElementById("questionId").value = "";
+            document.getElementById("questionIdOption").value = "";
             document.getElementById("optionActionType").value = "new";}
 
         // Function to fill the form with the details of the student to be edited
@@ -409,7 +423,7 @@
                 document.getElementById("examTitle").value = exam.examTitle;
                 document.getElementById("examDate").value = exam.examDate;
                 document.getElementById("percent").value = exam.percent;
-                document.getElementById("courseId").value = exam.courseId;
+                document.getElementById("courseIdExam").value = exam.courseId;
                 document.getElementById("examActionType").value = exam.examId;
                 handleExamLoad(2);
             }
@@ -422,7 +436,7 @@
                 document.getElementById("questionNo").value = question.questionNo;
                 document.getElementById("questionDate").value = question.questionDate;
                 document.getElementById("questionTitle").value = question.questionTitle;
-                document.getElementById("examId").value = question.examId;
+                document.getElementById("examIdQuestion").value = question.examId;
                 document.getElementById("questionActionType").value = question.questionId;
                 handleQuestionLoad(2);
             }
@@ -435,7 +449,7 @@
                 document.getElementById("optionId").value = option.optionId;
                 document.getElementById("optionNo").value = option.optionNo;
                 document.getElementById("optionTitle").value = option.optionTitle;
-                document.getElementById("questionId").value = option.questionId;
+                document.getElementById("questionIdOption").value = option.questionId;
                 document.getElementById("optionActionType").value = option.optionId;
                 handleOptionLoad(2);
             }
@@ -492,10 +506,11 @@
                 let examTitle = document.getElementById("examTitle").value;
                 let examDate = document.getElementById("examDate").value;
                 let percent = document.getElementById("percent").value;
-                let courseId = document.getElementById("courseId").value;
+                let courseId = document.getElementById("courseIdExam").value;
                 let exam = new Exam(examId, examTitle, examDate, percent, [], courseId);
                 let course = getCourseById(courseId)
-                console.log(course)
+                console.log(courseId)
+                
                 if (course !== undefined || course !== null) {
                     examArr.push(exam);
                     course.exams.push(exam)
@@ -523,7 +538,7 @@
                 let questionNo = document.getElementById("questionNo").value;
                 let questionDate = document.getElementById("questionDate").value;
                 let questionTitle = document.getElementById("questionTitle").value;
-                let examId = document.getElementById("examId").value;
+                let examId = document.getElementById("examIdQuestion").value;
                 let question = new Questions(questionId, questionNo, questionDate, questionTitle, [], examId);
                 let exam = getExamById(examId)
                 if (exam !== undefined || exam !== null) {
@@ -548,7 +563,7 @@
                 let optionId = document.getElementById("optionId").value;
                 let optionNo = document.getElementById("optionNo").value;
                 let optionTitle = document.getElementById("optionTitle").value;
-                let questionId = document.getElementById("questionId").value;
+                let questionId = document.getElementById("questionIdOption").value;
                 let option = new Options(optionId, optionNo, optionTitle, questionId);
                 let question = getQuestionById(questionId);
                 if (question !== undefined || question !== null) {
@@ -732,7 +747,7 @@
             Exam Title: <input type="text" id="examTitle"><br>
             Exam Date: <input type="text" id="examDate"><br>
             Percent: <input type="text" id="percent"><br>
-            Course Id: <input type="text" id="courseId"><br>
+            Course Id: <input type="text" id="courseIdExam"><br>
             <input type="hidden" id="examActionType">
             <button onclick="saveExam()">Save</button>
             <button onclick="handleExamLoad(1)">Cancel</button>
@@ -750,7 +765,7 @@
             Question No: <input type="text" id="questionNo"><br>
             Question Date: <input type="text" id="questionDate"><br>
             Question Title: <input type="text" id="questionTitle"><br>
-            Exam Id: <input type="text" id="examId"><br>
+            Exam Id: <input type="text" id="examIdQuestion"><br>
             <input type="hidden" id="questionActionType">
             <button onclick="saveQuestion()">Save</button>
             <button onclick="handleQuestionLoad(1)">Cancel</button>
@@ -766,7 +781,7 @@
             Option Id: <input type="text" id="optionId"><br>
             Option No: <input type="text" id="optionNo"><br>
             Option Title: <input type="text" id="optionTitle"><br>
-            Question Id: <input type="text" id="questionId"><br>
+            Question Id: <input type="text" id="questionIdOption"><br>
             <input type="hidden" id="optionActionType">
             <button onclick="saveOption()">Save</button>
             <button onclick="handleOptionLoad(1)">Cancel</button>
