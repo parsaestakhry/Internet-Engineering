@@ -87,7 +87,8 @@
 
 
         class Student_Exam{
-            constructor(examId, stCode, result) {
+            constructor(stExamId, examId, stCode, result) {
+                this.stExamId = stExamId
                 this.examId = examId
                 this.stCode = stCode
                 this.result = []
@@ -95,7 +96,13 @@
         }
 
 
-        
+        class Result {
+            constructor(resultId, stOption, answerOption) {
+                this.resultId = resultId
+                this.stOption = stOption
+                this.answerOption = answerOption
+            }
+        }
 
 
        
