@@ -128,6 +128,10 @@
             if (stArr.length == 0) { // Check if the student array is empty
                 document.getElementById("dtblStudent").innerHTML = "Student List is empty";
             } else {
+
+                for (let st of stArr) {
+                    console.log(st)
+                }
                 // Create the table header
                 let tblStu =
                     `<table border="1px">
@@ -982,7 +986,7 @@
         function addResultToStExam() {
             for (let stExam of stExamArr) {
                 stExam.result = resultArr.filter(result => result.stCodeExamId === stExam.stCodeExamId);
-                
+
             }
         }
 
@@ -990,11 +994,40 @@
 
         function calculateExamResultsForStudents() {
             for (let stExam of stExamArr) {
-                
+                let totalScore = 0;
+                let totalPossibleScore = 0;
+
+
+                for (let result of stExam.result) {
+                    let question = getQuestionById(result.questionId);
+                    if (question) {
+                        totalScore += parseFloat(result.result);
+                        totalPossibleScore += question.score;
+
+
+                    }
                 }
-                console.log(stExam)
+
+                let exam = getExamById(stExam.examId);
+
+                if (exam) {
+
+                    
+                    let examResult = (totalScore / totalPossibleScore) * exam.percent;
+
+                    let student = getStudentById(stExam.stCode);
+                    if (student) {
+                        student.addExamResult({ examId: stExam.examId, result: examResult });
+                    }
+                }
+
+
             }
-        
+
+
+
+        }
+
 
 
     </script>
@@ -1183,5 +1216,5 @@
     createStudentExamTable()
     addResultToStExam()
     calculateExamResultsForStudents()
-    
+
 </script>
