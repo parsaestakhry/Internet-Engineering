@@ -1075,24 +1075,61 @@
 
 <script>
     stArr = []; // Initialize an empty array to store students
-    courseArr = [] // empty array for course 
-    examArr = [] // empty array for exam
-    questionArr = [] // empty array
-    optionArr = [] // empty array
-    resultArr = [] // empty array
-    stExamArr = [] // empty array
-    handleStudentLoad(1); // Hide the form initially
-    handleCourseLoad(1); // Hide the form initially
-    handleExamLoad(1); // Hide the form initially
-    handleOptionLoad(1); // Hide the form initially
-    handleQuestionLoad(1)
-    handleResultLoad(1)
-    handleStudentExamLoad(1)
-    createStudentTable(); // Create the initial student table
-    createCourseTable(); // Create the initial course table
-    createExamTable(); // Create the initial exam table
-    createQuestionTable(); // Create the initial question table
-    createOptionTable()
-    createResultTable()
-    createStudentExamTable()
+        courseArr = [] // empty array for course 
+        examArr = [] // empty array for exam
+        questionArr = [] // empty array
+        optionArr = [] // empty array
+        resultArr = [] // empty array
+        stExamArr = [] // empty array
+
+        // Add mock data
+        stArr = [
+            new Student("S001", "John", "Doe", "Computer Science"),
+            new Student("S002", "Jane", "Smith", "Mathematics")
+        ];
+
+        courseArr = [
+            new Course("C001", "Algorithms", 3),
+            new Course("C002", "Data Structures", 4)
+        ];
+
+        examArr = [
+            new Exam("E001", "Midterm", "2025-03-01", 50),
+            new Exam("E002", "Final", "2025-06-01", 50)
+        ];
+
+        questionArr = [
+            new Questions("Q001", 1, "2025-03-01", "What is an algorithm?", [], "E001"),
+            new Questions("Q002", 2, "2025-03-01", "Explain data structures.", [], "E002")
+        ];
+
+        optionArr = [
+            new Options("O001", 1, "Option 1", "Q001"),
+            new Options("O002", 2, "Option 2", "Q002")
+        ];
+
+        resultArr = [
+            new Result("R001", "O001", "Correct", "SE001", "Q001"),
+            new Result("R002", "O002", "Incorrect", "SE002", "Q002")
+        ];
+
+        stExamArr = [
+            new Student_Exam("SE001", "E001", "S001", []),
+            new Student_Exam("SE002", "E002", "S002", [])
+        ];
+
+        handleStudentLoad(1); // Hide the form initially
+        handleCourseLoad(1); // Hide the form initially
+        handleExamLoad(1); // Hide the form initially
+        handleOptionLoad(1); // Hide the form initially
+        handleQuestionLoad(1)
+        handleResultLoad(1)
+        handleStudentExamLoad(1)
+        createStudentTable(); // Create the initial student table
+        createCourseTable(); // Create the initial course table
+        createExamTable(); // Create the initial exam table
+        createQuestionTable(); // Create the initial question table
+        createOptionTable()
+        createResultTable()
+        createStudentExamTable()
 </script>
