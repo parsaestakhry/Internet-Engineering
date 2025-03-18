@@ -35,14 +35,28 @@
             // Method to calculate the total grade
             calcTotalGrade() {
                 let totalGrade = 0;
+
+
                 for (let result of this.examResults) {
-                    totalGrade += parseFloat(result.result);
+                    totalGrade += result.result;
+
                 }
                 return totalGrade;
             }
             // Placeholder method to get the result of a specific course
             getCourseResult(courseId) {
-                //TODO: By students as exercise
+                let totalGrade = 0;
+                let totalPercent = 0;
+                for (let exam of examArr) {
+                    if (exam.courseId === courseId) {
+                        let examResult = this.examResults.find(result => result.examId === exam.examId);
+                        if (examResult) {
+                            totalGrade += examResult.result;
+                            totalPercent += exam.percent;
+                        }
+                    }
+                }
+                return totalPercent > 0 ? (totalGrade / totalPercent) * 100 : 0;
             }
         }
 
@@ -127,35 +141,30 @@
             if (stArr.length == 0) { // Check if the student array is empty
                 document.getElementById("dtblStudent").innerHTML = "Student List is empty";
             } else {
-
-
                 // Create the table header
                 let tblStu =
                     `<table border="1px">
-            <tr>
-                <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th>Selected Courses</th><th>Total Grade</th><th>Exam Results</th><th></th><th></th><th></th>
-            </tr>`;
+        <tr>
+            <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th>Selected Courses</th><th>Total Grade</th><th>Course Results</th><th></th><th></th><th></th>
+        </tr>`;
                 let idx = 1; // Initialize row index
                 // Loop through each student and create a row in the table
                 for (let st of stArr) {
                     let selectedCourses = st.selectedCourses.map(course => course.courseTitle).join(", ");
-                    let examResults = st.examResults.map(result => {
-                        let question = getQuestionById(result.questionId);
-                        return question ? `${question.questionTitle}: ${result.result}` : '';
-                    }).join("<br>");
+                    let courseResults = st.selectedCourses.map(course => `${course.courseTitle}: ${st.getCourseResult(course.courseId).toFixed(2)}%`).join("<br>");
                     tblStu +=
                         `<tr>
-                <td>${idx++}</td>
-                <td>${st.stCode}</td>
-                <td>${st.fullName()}</td>
-                <td>${st.stField}</td>
-                <td>${selectedCourses}</td>
-                <td>${st.calcTotalGrade()}</td>
-                <td>${examResults}</td>
-                <td><button onclick="fillEditStudent('${st.stCode}')">Edit</button></td>
-                <td><button onclick="deleteStudentById('${st.stCode}')">Delete</button></td>
-                <td><button onclick="selectCourseForStudent('${st.stCode}')">Select Course</button></td>
-                </tr>`;
+            <td>${idx++}</td>
+            <td>${st.stCode}</td>
+            <td>${st.fullName()}</td>
+            <td>${st.stField}</td>
+            <td>${selectedCourses}</td>
+            <td>${st.calcTotalGrade()}</td>
+            <td>${courseResults}</td>
+            <td><button onclick="fillEditStudent('${st.stCode}')">Edit</button></td>
+            <td><button onclick="deleteStudentById('${st.stCode}')">Delete</button></td>
+            <td><button onclick="selectCourseForStudent('${st.stCode}')">Select Course</button></td>
+            </tr>`;
                 }
                 tblStu += "</table>"; // Close the table
                 document.getElementById("dtblStudent").innerHTML = tblStu; // Display the table
@@ -995,6 +1004,13 @@
 
 
 
+
+
+
+
+
+
+
         function calculateExamResultsForStudents() {
             for (let stExam of stExamArr) {
                 let totalScore = 0;
@@ -1174,8 +1190,8 @@
     ];
 
     examArr = [
-        new Exam("E001", "Midterm", "2025-03-01", 50),
-        new Exam("E002", "Final", "2025-06-01", 50)
+        new Exam("E001", "Midterm", "2025-03-01", 50, [], "C001"),
+        new Exam("E002", "Final", "2025-06-01", 50, [], "C002")
     ];
 
     questionArr = [
@@ -1206,7 +1222,7 @@
     handleQuestionLoad(1)
     handleResultLoad(1)
     handleStudentExamLoad(1)
-    createStudentTable(); // Create the initial student table
+    // Create the initial student table
     createCourseTable(); // Create the initial course table
     createExamTable(); // Create the initial exam table
     createQuestionTable(); // Create the initial question table
@@ -1216,5 +1232,6 @@
     addOptionToQuestion()
     addResultToStExam()
     calculateExamResultsForStudents()
+    createStudentTable();
 
 </script>
