@@ -97,10 +97,10 @@
 
 
         class Result {
-            constructor(resultId, option, answerOption, stCodeExamId) {
-                
+            constructor(resultId, option, answerOption, stCodeExamId,questionId) {
+                this.questionId = questionId
                 this.resultId = resultId
-                this.option = []
+                this.option = option
                 this.answerOption = answerOption
                 this.stCodeExamId = stCodeExamId
             }
@@ -256,7 +256,7 @@
             } else {
                 let tblResult = `<table border="1px">
                 <tr>
-                    <th>Row</th><th>Result Id</th><th>Option</th><th>Answer Option</th><th>Student Exam Id</th><th></th>
+                    <th>Row</th><th>Result Id</th><th>Option</th><th>Answer Option</th><th>Student Exam Id</th><th>Question Id</th><th></th><th></th>
                 </tr>`;
                 let idx = 1;
                 for (let result of resultArr) {
@@ -266,6 +266,7 @@
                     <td>${result.option}</td>
                     <td>${result.answerOption}</td>
                     <td>${result.stCodeExamId}</td>
+                    <td>${result.questionId}</td>
                     <td><button onclick="fillEditResult('${result.resultId}')">Edit</button></td>
                     <td><button onclick="deleteResultById('${result.resultId}')">Delete</button></td>
                     </tr>`;
@@ -290,7 +291,6 @@
                     <td>${stExam.stCodeExamId}</td>
                     <td>${stExam.examId}</td>
                     <td>${stExam.stCode}</td>
-                    <td>${stExam.result}</td>
                     <td><button onclick="fillEditStudentExam('${stExam.stCodeExamId}')">Edit</button></td>
                     <td><button onclick="deleteStudentExamById('${stExam.stCodeExamId}')">Delete</button></td>
                     </tr>`;
@@ -508,6 +508,7 @@
             document.getElementById("option").value = "";
             document.getElementById("answerOption").value = "";
             document.getElementById("stCodeExamId").value = "";
+            document.getElementById("questionIdResult").value = "";
             document.getElementById("resultActionType").value = "new";
         }
 
@@ -516,7 +517,6 @@
             document.getElementById("stCodeExamId").value = "";
             document.getElementById("examIdStudentExam").value = "";
             document.getElementById("stCodeStudentExam").value = "";
-            document.getElementById("resultStudentExam").value = "";
             document.getElementById("studentExamActionType").value = "new";
         }
 
@@ -590,8 +590,10 @@
                 document.getElementById("resultId").value = result.resultId;
                 document.getElementById("option").value = result.option;
                 document.getElementById("answerOption").value = result.answerOption;
-                document.getElementById("stCodeExamId").value = result.stCodeExamId;
+                document.getElementById("stCodeExamIdResult").value = result.stCodeExamId;
+                document.getElementById("questionIdResult").value = result.questionId;
                 document.getElementById("resultActionType").value = result.resultId;
+
                 handleResultLoad(2);
             }
         }
@@ -603,7 +605,6 @@
                 document.getElementById("stCodeExamId").value = stExam.stCodeExamId;
                 document.getElementById("examIdStudentExam").value = stExam.examId;
                 document.getElementById("stCodeStudentExam").value = stExam.stCode;
-                document.getElementById("resultStudentExam").value = stExam.result;
                 document.getElementById("studentExamActionType").value = stExam.stCodeExamId;
                 handleStudentExamLoad(2);
             }
@@ -739,12 +740,21 @@
             let actionType = document.getElementById("resultActionType").value;
             if (actionType == "new") {
                 let resultId = document.getElementById("resultId").value;
-                let option = document.getElementById("option").value;
+                let optionId = document.getElementById("option").value;
                 let answerOption = document.getElementById("answerOption").value;
-                let stCodeExamId = document.getElementById("stCodeExamId").value;
-                let result = new Result(resultId, option, answerOption, stCodeExamId);
+                let stCodeExamId = document.getElementById("stCodeExamIdResult").value;
+                let questionId = document.getElementById("questionIdResult").value;
+                let option = getOptionById(optionId)
+                let question = getQuestionById(questionId)
+                let stExam = getStudentExamById(stCodeExamId)
+                console.log(option)
+                let result = new Result(resultId, option.optionId, answerOption, stCodeExamId, questionId);
 
+                if (option && question && stExam) {
+                    resultArr.push(result)
+                    stExam.result.push(result)
 
+                }
             } else {
                 let result = getResultById(actionType);
                 result.resultId = document.getElementById("resultId").value;
@@ -763,8 +773,7 @@
                 let stCodeExamId = document.getElementById("stCodeExamId").value;
                 let examId = document.getElementById("examIdStudentExam").value;
                 let stCode = document.getElementById("stCodeStudentExam").value;
-                let result = document.getElementById("resultStudentExam").value;
-                let stExam = new Student_Exam(stCodeExamId, examId, stCode, result);
+                let stExam = new Student_Exam(stCodeExamId, examId, stCode);
                 let exam = getExamById(stExam.examId)
                 let student = getStudentById(stExam.stCode)
                 if (student && exam) {
@@ -775,7 +784,6 @@
                 stExam.stCodeExamId = document.getElementById("stCodeExamId").value;
                 stExam.examId = document.getElementById("examIdStudentExam").value;
                 stExam.stCode = document.getElementById("stCodeStudentExam").value;
-                stExam.result = document.getElementById("resultStudentExam").value;
             }
 
             handleStudentExamLoad(1);
@@ -1040,6 +1048,7 @@
             Option: <input type="text" id="option"><br>
             Answer Option: <input type="text" id="answerOption"><br>
             Student Exam Id: <input type="text" id="stCodeExamIdResult"><br>
+            Question Id: <input type="text" id="questionIdResult"><br>
             <input type="hidden" id="resultActionType">
             <button onclick="saveResult()">Save</button>
             <button onclick="handleResultLoad(1)">Cancel</button>
@@ -1055,7 +1064,6 @@
             Student Exam Id: <input type="text" id="stCodeExamId"><br>
             Exam Id: <input type="text" id="examIdStudentExam"><br>
             Student Code: <input type="text" id="stCodeStudentExam"><br>
-            Result: <input type="text" id="resultStudentExam"><br>
             <input type="hidden" id="studentExamActionType">
             <button onclick="saveStudentExam()">Save</button>
             <button onclick="handleStudentExamLoad(1)">Cancel</button>
