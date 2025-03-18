@@ -128,9 +128,7 @@
                 document.getElementById("dtblStudent").innerHTML = "Student List is empty";
             } else {
 
-                for (let st of stArr) {
-                    console.log(st)
-                }
+                
                 // Create the table header
                 let tblStu =
                     `<table border="1px">
@@ -140,7 +138,6 @@
                 let idx = 1; // Initialize row index
                 // Loop through each student and create a row in the table
                 for (let st of stArr) {
-                    console.log(st.examResults)
                     let selectedCourses = st.selectedCourses.map(course => course.courseTitle).join(", ");
                     let examResults = st.examResults.map(result => {
                         let question = getQuestionById(result.questionId);
