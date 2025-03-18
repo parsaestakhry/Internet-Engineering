@@ -128,7 +128,7 @@
                 document.getElementById("dtblStudent").innerHTML = "Student List is empty";
             } else {
 
-                
+
                 // Create the table header
                 let tblStu =
                     `<table border="1px">
@@ -987,7 +987,7 @@
         }
 
 
-        function addOptionToQuestion(){
+        function addOptionToQuestion() {
             for (let question of questionArr) {
                 question.options = optionArr.filter(option => option.questionId === question.questionId);
             }
@@ -1002,14 +1002,14 @@
 
                 for (let result of stExam.result) {
                     let question = getQuestionById(result.questionId);
-                    if(result.answerOption === "Correct") {
-                        if(question) {
+                    if (result.answerOption === "Correct") {
+                        if (question) {
                             totalScore += question.score;
                             totalPossibleScore += question.score;
                             if (totalPossibleScore > 0) {
 
                                 let exam = getExamById(stExam.examId)
-                                
+
                                 let examResult = (totalScore / totalPossibleScore) * exam.percent;
                                 let student = getStudentById(stExam.stCode);
                                 if (student) {
@@ -1020,7 +1020,7 @@
                     }
                 }
 
-                
+
             }
 
 
