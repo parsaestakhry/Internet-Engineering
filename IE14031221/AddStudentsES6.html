@@ -26,7 +26,7 @@
             addExamResult(stExamResult) {
                 this.examResults.push(stExamResult);
 
-                
+
             }
             // Method to get the full name of the student
             fullName() {
@@ -94,11 +94,11 @@
 
 
         class Student_Exam {
-            constructor(stCodeExamId, examId, stCode, result) {
-                this.stCodeExamId = stCodeExamId
-                this.examId = examId
-                this.stCode = stCode
-                this.result = []
+            constructor(stCodeExamId, examId, stCode) {
+                this.stCodeExamId = stCodeExamId;
+                this.examId = examId;
+                this.stCode = stCode;
+                this.result = []; // Initialize result as an empty array
             }
         }
 
@@ -773,6 +773,7 @@
                 if (option && question && stExam) {
                     resultArr.push(result);
                     stExam.result.push(result);
+                    console.log(stExam)
 
                     // Add the result to the corresponding student's exam results
                     let student = getStudentById(stExam.stCode);
@@ -975,6 +976,27 @@
             }
         }
 
+
+
+
+        function addResultToStExam() {
+            for (let stExam of stExamArr) {
+                stExam.result = resultArr.filter(result => result.stCodeExamId === stExam.stCodeExamId);
+                
+            }
+        }
+
+
+
+        function calculateExamResultsForStudents() {
+            for (let stExam of stExamArr) {
+                
+                }
+                console.log(stExam)
+            }
+        
+
+
     </script>
 </head>
 
@@ -1136,7 +1158,8 @@
 
     resultArr = [
         new Result("R001", "O001", "Correct", "SE001", "Q001"),
-        new Result("R002", "O002", "Incorrect", "SE002", "Q002")
+        new Result("R002", "O002", "Incorrect", "SE002", "Q002"),
+
     ];
 
     stExamArr = [
@@ -1158,4 +1181,7 @@
     createOptionTable()
     createResultTable()
     createStudentExamTable()
+    addResultToStExam()
+    calculateExamResultsForStudents()
+    
 </script>
