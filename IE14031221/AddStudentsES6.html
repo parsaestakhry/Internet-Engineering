@@ -110,7 +110,6 @@
                 this.option = option
                 this.answerOption = answerOption
                 this.stCodeExamId = stCodeExamId
-                this.result = result; // Add this line to store the numeric grade
             }
         }
 
@@ -991,37 +990,40 @@
         }
 
 
+        function addOptionToQuestion(){
+            for (let question of questionArr) {
+                question.options = optionArr.filter(option => option.questionId === question.questionId);
+            }
+        }
+
+
 
         function calculateExamResultsForStudents() {
             for (let stExam of stExamArr) {
                 let totalScore = 0;
                 let totalPossibleScore = 0;
 
-
                 for (let result of stExam.result) {
                     let question = getQuestionById(result.questionId);
-                    if (question) {
-                        totalScore += parseFloat(result.result);
-                        totalPossibleScore += question.score;
+                    if(result.answerOption === "Correct") {
+                        if(question) {
+                            totalScore += question.score;
+                            totalPossibleScore += question.score;
+                            if (totalPossibleScore > 0) {
 
-
+                                let exam = getExamById(stExam.examId)
+                                
+                                let examResult = (totalScore / totalPossibleScore) * exam.percent;
+                                let student = getStudentById(stExam.stCode);
+                                if (student) {
+                                    student.addExamResult({ examId: stExam.examId, result: examResult });
+                                }
+                            }
+                        }
                     }
                 }
 
-                let exam = getExamById(stExam.examId);
-
-                if (exam) {
-
-                    
-                    let examResult = (totalScore / totalPossibleScore) * exam.percent;
-
-                    let student = getStudentById(stExam.stCode);
-                    if (student) {
-                        student.addExamResult({ examId: stExam.examId, result: examResult });
-                    }
-                }
-
-
+                
             }
 
 
@@ -1214,6 +1216,7 @@
     createOptionTable()
     createResultTable()
     createStudentExamTable()
+    addOptionToQuestion()
     addResultToStExam()
     calculateExamResultsForStudents()
 
