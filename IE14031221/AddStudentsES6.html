@@ -1181,38 +1181,51 @@
     // Add mock data
     stArr = [
         new Student("S001", "John", "Doe", "Computer Science"),
-        new Student("S002", "Jane", "Smith", "Mathematics")
+        new Student("S002", "Jane", "Smith", "Mathematics"),
+        new Student("S003", "Alice", "Johnson", "Physics"),
+        new Student("S004", "Bob", "Brown", "Chemistry")
     ];
 
     courseArr = [
         new Course("C001", "Algorithms", 3),
-        new Course("C002", "Data Structures", 4)
+        new Course("C002", "Data Structures", 4),
+        new Course("C003", "Quantum Mechanics", 4),
+        new Course("C004", "Organic Chemistry", 3)
     ];
 
     examArr = [
         new Exam("E001", "Midterm", "2025-03-01", 50, [], "C001"),
-        new Exam("E002", "Final", "2025-06-01", 50, [], "C002")
+        new Exam("E002", "Final", "2025-06-01", 50, [], "C002"),
+        new Exam("E003", "Midterm", "2025-03-15", 50, [], "C003"),
+        new Exam("E004", "Final", "2025-06-15", 50, [], "C004")
     ];
 
     questionArr = [
         new Questions("Q001", 1, "2025-03-01", "What is an algorithm?", [], "E001", 10),
-        new Questions("Q002", 2, "2025-03-01", "Explain data structures.", [], "E002", 15)
+        new Questions("Q002", 2, "2025-03-01", "Explain data structures.", [], "E002", 15),
+        new Questions("Q003", 1, "2025-03-15", "What is quantum entanglement?", [], "E003", 20),
+        new Questions("Q004", 2, "2025-03-15", "Explain organic reactions.", [], "E004", 25)
     ];
 
     optionArr = [
         new Options("O001", 1, "Option 1", "Q001"),
-        new Options("O002", 2, "Option 2", "Q002")
+        new Options("O002", 2, "Option 2", "Q002"),
+        new Options("O003", 1, "Option 1", "Q003"),
+        new Options("O004", 2, "Option 2", "Q004")
     ];
 
     resultArr = [
         new Result("R001", "O001", "Correct", "SE001", "Q001"),
         new Result("R002", "O002", "Incorrect", "SE002", "Q002"),
-
+        new Result("R003", "O003", "Correct", "SE003", "Q003"),
+        new Result("R004", "O004", "Incorrect", "SE004", "Q004")
     ];
 
     stExamArr = [
         new Student_Exam("SE001", "E001", "S001", []),
-        new Student_Exam("SE002", "E002", "S002", [])
+        new Student_Exam("SE002", "E002", "S002", []),
+        new Student_Exam("SE003", "E003", "S003", []),
+        new Student_Exam("SE004", "E004", "S004", [])
     ];
 
     handleStudentLoad(1); // Hide the form initially
