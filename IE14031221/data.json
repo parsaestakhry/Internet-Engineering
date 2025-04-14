@@ -1,0 +1,216 @@
+{
+  "students": [
+    {
+      "stCode": "S001",
+      "firstName": "John",
+      "lastName": "Doe",
+      "stField": "Computer Science",
+      "selectedCourses": [],
+      "examResults": []
+    },
+    {
+      "stCode": "S002",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "stField": "Mathematics",
+      "selectedCourses": [],
+      "examResults": []
+    },
+    {
+      "stCode": "S003",
+      "firstName": "Alice",
+      "lastName": "Johnson",
+      "stField": "Physics",
+      "selectedCourses": [],
+      "examResults": []
+    },
+    {
+      "stCode": "S004",
+      "firstName": "Bob",
+      "lastName": "Brown",
+      "stField": "Chemistry",
+      "selectedCourses": [],
+      "examResults": []
+    }
+  ],
+  "courses": [
+    {
+      "courseId": "C001",
+      "courseTitle": "Algorithms",
+      "unitNo": 3,
+      "exams": []
+    },
+    {
+      "courseId": "C002",
+      "courseTitle": "Data Structures",
+      "unitNo": 4,
+      "exams": []
+    },
+    {
+      "courseId": "C003",
+      "courseTitle": "Quantum Mechanics",
+      "unitNo": 4,
+      "exams": []
+    },
+    {
+      "courseId": "C004",
+      "courseTitle": "Organic Chemistry",
+      "unitNo": 3,
+      "exams": []
+    }
+  ],
+  "exams": [
+    {
+      "examId": "E001",
+      "examTitle": "Midterm",
+      "examDate": "2025-03-01",
+      "percent": 50,
+      "questions": [],
+      "courseId": "C001"
+    },
+    {
+      "examId": "E002",
+      "examTitle": "Final",
+      "examDate": "2025-06-01",
+      "percent": 50,
+      "questions": [],
+      "courseId": "C002"
+    },
+    {
+      "examId": "E003",
+      "examTitle": "Midterm",
+      "examDate": "2025-03-15",
+      "percent": 50,
+      "questions": [],
+      "courseId": "C003"
+    },
+    {
+      "examId": "E004",
+      "examTitle": "Final",
+      "examDate": "2025-06-15",
+      "percent": 50,
+      "questions": [],
+      "courseId": "C004"
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "Q001",
+      "questionNo": 1,
+      "questionDate": "2025-03-01",
+      "questionTitle": "What is an algorithm?",
+      "options": [],
+      "examId": "E001",
+      "score": 10
+    },
+    {
+      "questionId": "Q002",
+      "questionNo": 2,
+      "questionDate": "2025-03-01",
+      "questionTitle": "Explain data structures.",
+      "options": [],
+      "examId": "E002",
+      "score": 15
+    },
+    {
+      "questionId": "Q003",
+      "questionNo": 1,
+      "questionDate": "2025-03-15",
+      "questionTitle": "What is quantum entanglement?",
+      "options": [],
+      "examId": "E003",
+      "score": 20
+    },
+    {
+      "questionId": "Q004",
+      "questionNo": 2,
+      "questionDate": "2025-03-15",
+      "questionTitle": "Explain organic reactions.",
+      "options": [],
+      "examId": "E004",
+      "score": 25
+    }
+  ],
+  "options": [
+    {
+      "optionId": "O001",
+      "optionNo": 1,
+      "optionTitle": "Option 1",
+      "questionId": "Q001"
+    },
+    {
+      "optionId": "O002",
+      "optionNo": 2,
+      "optionTitle": "Option 2",
+      "questionId": "Q002"
+    },
+    {
+      "optionId": "O003",
+      "optionNo": 1,
+      "optionTitle": "Option 1",
+      "questionId": "Q003"
+    },
+    {
+      "optionId": "O004",
+      "optionNo": 2,
+      "optionTitle": "Option 2",
+      "questionId": "Q004"
+    }
+  ],
+  "results": [
+    {
+      "resultId": "R001",
+      "option": "O001",
+      "answerOption": "Correct",
+      "stCodeExamId": "SE001",
+      "questionId": "Q001"
+    },
+    {
+      "resultId": "R002",
+      "option": "O002",
+      "answerOption": "Incorrect",
+      "stCodeExamId": "SE002",
+      "questionId": "Q002"
+    },
+    {
+      "resultId": "R003",
+      "option": "O003",
+      "answerOption": "Correct",
+      "stCodeExamId": "SE003",
+      "questionId": "Q003"
+    },
+    {
+      "resultId": "R004",
+      "option": "O004",
+      "answerOption": "Incorrect",
+      "stCodeExamId": "SE004",
+      "questionId": "Q004"
+    }
+  ],
+  "studentExams": [
+    {
+      "stCodeExamId": "SE001",
+      "examId": "E001",
+      "stCode": "S001",
+      "result": []
+    },
+    {
+      "stCodeExamId": "SE002",
+      "examId": "E002",
+      "stCode": "S002",
+      "result": []
+    },
+    {
+      "stCodeExamId": "SE003",
+      "examId": "E003",
+      "stCode": "S003",
+      "result": []
+    },
+    {
+      "stCodeExamId": "SE004",
+      "examId": "E004",
+      "stCode": "S004",
+      "result": []
+    }
+  ]
+}
