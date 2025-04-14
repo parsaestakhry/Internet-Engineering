@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"> <!-- Specifies the character encoding for the HTML document -->
+    <title>Add Students</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Title of the HTML document -->
+    <script>
+        // JavaScript code starts here
+
+
+
+        let stArr = [], courseArr = [], examArr = [], questionArr = [], optionArr = [], resultArr = [], stExamArr = [];
+
+        function loadData() {
+            $.getJSON('data.json')
+                .done(function (data) {
+                    stArr = (data.students || []).map(st => new Student(st.stCode, st.firstName, st.lastName, st.stField));
+                    courseArr = (data.courses || []).map(course => new Course(course.courseId, course.courseTitle, course.unitNo, course.exams));
+                    examArr = (data.exams || []).map(exam => new Exam(exam.examId, exam.examTitle, exam.examDate, exam.percent, exam.questions, exam.courseId));
+                    questionArr = (data.questions || []).map(question => new Questions(question.questionId, question.questionNo, question.questionDate, question.questionTitle, question.options, question.examId, question.score));
+                    optionArr = (data.options || []).map(option => new Options(option.optionId, option.optionNo, option.optionTitle, option.questionId));
+                    resultArr = (data.results || []).map(result => new Result(result.resultId, result.option, result.answerOption, result.stCodeExamId, result.questionId, result.result));
+                    stExamArr = (data.studentExams || []).map(stExam => new Student_Exam(stExam.stCodeExamId, stExam.examId, stExam.stCode));
+
+                    createStudentTable();
+                    createCourseTable();
+                    createExamTable();
+                    createQuestionTable();
+                    createOptionTable();
+                    createResultTable();
+                    createStudentExamTable();
+                })
+                .fail(function () {
+                    console.error("Error loading data.");
+                });
+        }
+
+        function saveData() {
+            const data = {
+                students: stArr,
+                courses: courseArr,
+                exams: examArr,
+                questions: questionArr,
+                options: optionArr,
+                results: resultArr,
+                studentExams: stExamArr
+            };
+
+            console.log('Updated Data:', JSON.stringify(data, null, 2));
+
+            const $output = $('#output');
+            if ($output.length) {
+                $output.val(JSON.stringify(data, null, 2));
+            }
+        }
+
+        class Student {
+            constructor(stCode, firstName, lastName, stField) {
+                this.stCode = stCode;
+                this.firstName = firstName;
+                this.lastName = lastName;
+                this.stField = stField;
+                this.selectedCourses = [];
+                this.examResults = [];
+            }
+            addCourse(course) {
+                this.selectedCourses.push(course);
+            }
+            addExamResult(stExamResult) {
+                this.examResults.push(stExamResult);
+            }
+            fullName() {
+                return this.firstName + ' ' + this.lastName;
+            }
+            calcTotalGrade() {
+                let totalGrade = 0;
+                for (let result of this.examResults) {
+                    totalGrade += result.result;
+                }
+                return totalGrade;
+            }
+            getCourseResult(courseId) {
+                let totalGrade = 0;
+                let totalPercent = 0;
+                for (let exam of examArr) {
+                    if (exam.courseId === courseId) {
+                        let examResult = this.examResults.find(result => result.examId === exam.examId);
+                        if (examResult) {
+                            totalGrade += examResult.result;
+                            totalPercent += exam.percent;
+                        }
+                    }
+                }
+                return totalPercent > 0 ? (totalGrade / totalPercent) * 100 : 0;
+            }
+        }
+
+        class Course {
+            constructor(courseId, courseTitle, unitNo, exams) {
+                this.courseId = courseId;
+                this.courseTitle = courseTitle;
+                this.unitNo = unitNo;
+                this.exams = [];
+            }
+        }
+
+        class Exam {
+            constructor(examId, examTitle, examDate, percent, questions, courseId) {
+                this.examId = examId;
+                this.examTitle = examTitle;
+                this.examDate = examDate;
+                this.percent = percent;
+                this.questions = [];
+                this.courseId = courseId;
+            }
+        }
+
+        class Questions {
+            constructor(questionId, questionNo, questionDate, questionTitle, options, examId, score) {
+                this.questionId = questionId;
+                this.questionNo = questionNo;
+                this.questionDate = questionDate;
+                this.questionTitle = questionTitle;
+                this.options = [];
+                this.examId = examId;
+                this.score = score;
+            }
+        }
+
+        class Options {
+            constructor(optionId, optionNo, optionTitle, questionId) {
+                this.optionId = optionId;
+                this.optionNo = optionNo;
+                this.optionTitle = optionTitle;
+                this.questionId = questionId;
+            }
+        }
+
+        class Student_Exam {
+            constructor(stCodeExamId, examId, stCode) {
+                this.stCodeExamId = stCodeExamId;
+                this.examId = examId;
+                this.stCode = stCode;
+                this.result = [];
+            }
+        }
+
+        class Result {
+            constructor(resultId, option, answerOption, stCodeExamId, questionId, result) {
+                this.resultId = resultId;
+                this.option = option;
+                this.answerOption = answerOption;
+                this.stCodeExamId = stCodeExamId;
+                this.questionId = questionId;
+                this.result = result;
+            }
+        }
+
+        function createStudentTable() {
+            const $tableContainer = $("#dtblStudent");
+            if (stArr.length == 0) {
+                $tableContainer.html("Student List is empty");
+            } else {
+                let tblStu = `<table border="1px">
+                <tr>
+                    <th>Row</th><th>Student Code</th><th>Student Name</th><th>Field</th><th>Selected Courses</th><th>Total Grade</th><th>Course Results</th><th></th><th></th><th></th>
+                </tr>`;
+                let idx = 1;
+                for (let st of stArr) {
+                    let selectedCourses = st.selectedCourses.map(course => course.courseTitle).join(", ");
+                    let courseResults = st.selectedCourses.map(course => `${course.courseTitle}: ${st.getCourseResult(course.courseId).toFixed(2)}%`).join("<br>");
+                    tblStu += `<tr>
+                    <td>${idx++}</td>
+                    <td>${st.stCode}</td>
+                    <td>${st.fullName()}</td>
+                    <td>${st.stField}</td>
+                    <td>${selectedCourses}</td>
+                    <td>${st.calcTotalGrade()}</td>
+                    <td>${courseResults}</td>
+                    <td><button onclick="fillEditStudent('${st.stCode}')">Edit</button></td>
+                    <td><button onclick="deleteStudentById('${st.stCode}')">Delete</button></td>
+                    <td><button onclick="selectCourseForStudent('${st.stCode}')">Select Course</button></td>
+                </tr>`;
+                }
+                tblStu += "</table>";
+                $tableContainer.html(tblStu);
+            }
+        }
+
+        function createCourseTable() {
+            const $tableContainer = $("#dtblCourse");
+            if (courseArr.length == 0) {
+                $tableContainer.html("Course List is empty");
+            } else {
+                let tblCourse = `<table border="1px">
+                <tr><th>Row</th><th>Course Id</th><th>Course Title</th><th>Unit No</th><th></th><th></th></tr>`;
+                let idx = 1;
+                for (let course of courseArr) {
+                    tblCourse += `<tr>
+                    <td>${idx++}</td>
+                    <td>${course.courseId}</td>
+                    <td>${course.courseTitle}</td>
+                    <td>${course.unitNo}</td>
+                    <td><button onclick="fillEditCourse('${course.courseId}')">Edit</button></td>
+                    <td><button onclick="deleteCourseById('${course.courseId}')">Delete</button></td>
+                </tr>`;
+                }
+                tblCourse += "</table>";
+                $tableContainer.html(tblCourse);
+            }
+        }
+
+        function createExamTable() {
+            const $tableContainer = $("#dtblExam");
+            if (examArr.length == 0) {
+                $tableContainer.html("Exam List is Empty");
+            } else {
+                let tblExam = `<table border="1px">
+                <tr><th>Row</th><th>Exam Id</th><th>Exam Title</th><th>Exam Date</th><th>Percent</th><th>Course Id</th><th></th><th></th></tr>`;
+                let idx = 1;
+                for (let exam of examArr) {
+                    tblExam += `<tr>
+                    <td>${idx++}</td>
+                    <td>${exam.examId}</td>
+                    <td>${exam.examTitle}</td>
+                    <td>${exam.examDate}</td>
+                    <td>${exam.percent}</td>
+                    <td>${exam.courseId}</td>
+                    <td><button onclick="fillEditExam('${exam.examId}')">Edit</button></td>
+                    <td><button onclick="deleteExamById('${exam.examId}')">Delete</button></td>
+                </tr>`;
+                }
+                tblExam += "</table>";
+                $tableContainer.html(tblExam);
+            }
+        }
+
+        function createQuestionTable() {
+            const $tableContainer = $("#dtblQuestion");
+            if (questionArr.length == 0) {
+                $tableContainer.html("Question List is Empty");
+            } else {
+                let tblQuestion = `<table border="1px">
+                <tr><th>Row</th><th>Question Id</th><th>Question No</th><th>Question Date</th><th>Question Title</th><th>Exam Id</th><th>Question Score</th><th></th><th></th></tr>`;
+                let idx = 1;
+                for (let question of questionArr) {
+                    tblQuestion += `<tr>
+                    <td>${idx++}</td>
+                    <td>${question.questionId}</td>
+                    <td>${question.questionNo}</td>
+                    <td>${question.questionDate}</td>
+                    <td>${question.questionTitle}</td>
+                    <td>${question.examId}</td>
+                    <td>${question.score}</td>
+                    <td><button onclick="fillEditQuestion('${question.questionId}')">Edit</button></td>
+                    <td><button onclick="deleteQuestionById('${question.questionId}')">Delete</button></td>
+                </tr>`;
+                }
+                tblQuestion += "</table>";
+                $tableContainer.html(tblQuestion);
+            }
+        }
+
+        function createOptionTable() {
+            const $tableContainer = $("#dtblOption");
+            if (optionArr.length == 0) {
+                $tableContainer.html("Option List is Empty");
+            } else {
+                let tblOption = `<table border="1px">
+                <tr><th>Row</th><th>Option Id</th><th>Option No</th><th>Option Title</th><th>Question Id</th><th></th><th></th></tr>`;
+                let idx = 1;
+                for (let option of optionArr) {
+                    tblOption += `<tr>
+                    <td>${idx++}</td>
+                    <td>${option.optionId}</td>
+                    <td>${option.optionNo}</td>
+                    <td>${option.optionTitle}</td>
+                    <td>${option.questionId}</td>
+                    <td><button onclick="fillEditOption('${option.optionId}')">Edit</button></td>
+                    <td><button onclick="deleteOptionById('${option.optionId}')">Delete</button></td>
+                </tr>`;
+                }
+                tblOption += "</table>";
+                $tableContainer.html(tblOption);
+            }
+        }
+
+        // Auto-load data when page is ready
+        $(document).ready(function () {
+            loadData();
+        });
+
+
+
+
+        function createResultTable() {
+            if (resultArr.length == 0) {
+                $("#dtblResult").html("Result List is Empty");
+            } else {
+                let tblResult = `<table border="1px">
+        <tr>
+            <th>Row</th><th>Result Id</th><th>Option</th><th>Answer Option</th><th>Student Exam Id</th><th>Question Id</th><th></th><th></th>
+        </tr>`;
+                let idx = 1;
+                for (let result of resultArr) {
+                    tblResult += `<tr>
+            <td>${idx++}</td>
+            <td>${result.resultId}</td>
+            <td>${result.option}</td>
+            <td>${result.answerOption}</td>
+            <td>${result.stCodeExamId}</td>
+            <td>${result.questionId}</td>
+            <td><button onclick="fillEditResult('${result.resultId}')">Edit</button></td>
+            <td><button onclick="deleteResultById('${result.resultId}')">Delete</button></td>
+            </tr>`;
+                }
+                tblResult += "</table>";
+                $("#dtblResult").html(tblResult);
+            }
+        }
+
+        function createStudentExamTable() {
+            if (stExamArr.length == 0) {
+                $("#dtblStudentExam").html("Student Exam List is Empty");
+            } else {
+                let tblStExam = `<table border="1px">
+        <tr>
+            <th>Row</th><th>Student Exam Id</th><th>Exam Id</th><th>Student Code</th><th></th><th></th>
+        </tr>`;
+                let idx = 1;
+                for (let stExam of stExamArr) {
+                    tblStExam += `<tr>
+            <td>${idx++}</td>
+            <td>${stExam.stCodeExamId}</td>
+            <td>${stExam.examId}</td>
+            <td>${stExam.stCode}</td>
+            <td><button onclick="fillEditStudentExam('${stExam.stCodeExamId}')">Edit</button></td>
+            <td><button onclick="deleteStudentExamById('${stExam.stCodeExamId}')">Delete</button></td>
+            </tr>`;
+                }
+                tblStExam += "</table>";
+                $("#dtblStudentExam").html(tblStExam);
+            }
+        }
+
+        // Getter functions (no need for jQuery)
+        function getStudentById(stCode) {
+            return stArr.find(st => st.stCode == stCode) || null;
+        }
+        function getCourseById(courseId) {
+            return courseArr.find(course => course.courseId == courseId) || null;
+        }
+        function getExamById(examId) {
+            return examArr.find(exam => exam.examId == examId) || null;
+        }
+        function getQuestionById(questionId) {
+            return questionArr.find(question => question.questionId == questionId) || null;
+        }
+        function getOptionById(optionId) {
+            return optionArr.find(option => option.optionId == optionId) || null;
+        }
+        function getResultById(resultId) {
+            return resultArr.find(result => result.resultId == resultId) || null;
+        }
+        function getStudentExamById(stCodeExamId) {
+            return stExamArr.find(stExam => stExam.stCodeExamId == stCodeExamId) || null;
+        }
+
+        // Visibility toggle functions
+        function toggleForm(buttonId, formId, stat) {
+            if (stat == 1) {
+                $(`#${buttonId}`).prop("disabled", false);
+                $(`#${formId}`).hide();
+            } else {
+                $(`#${buttonId}`).prop("disabled", true);
+                $(`#${formId}`).show();
+            }
+        }
+
+        // Wrapper functions
+        function handleStudentLoad(stat) { toggleForm("btnAddStudent", "ddfnStudent", stat); }
+        function handleCourseLoad(stat) { toggleForm("btnAddCourse", "ddfnCourse", stat); }
+        function handleExamLoad(stat) { toggleForm("btnAddExam", "ddfnExam", stat); }
+        function handleQuestionLoad(stat) { toggleForm("btnAddQuestion", "ddfnQuestion", stat); }
+        function handleOptionLoad(stat) { toggleForm("btnAddOption", "ddfnOption", stat); }
+        function handleResultLoad(stat) { toggleForm("btnAddResult", "ddfnResult", stat); }
+        function handleStudentExamLoad(stat) { toggleForm("btnAddStudentExam", "ddfnStudentExam", stat); }
+
+        // Add new form handlers
+        function handleAddNewStudent() {
+            handleStudentLoad(2);
+            $("#stCode, #stFirstName, #stLastName, #stField").val("");
+            $("#stActionType").val("new");
+        }
+
+        function handleAddNewCourse() {
+            handleCourseLoad(2);
+            $("#courseId, #courseTitle, #unitNo").val("");
+            $("#courseActionType").val("new");
+        }
+
+        function handleAddNewExam() {
+            handleExamLoad(2);
+            $("#examId, #examTitle, #examDate, #percent, #courseIdExam").val("");
+            $("#examActionType").val("new");
+        }
+
+        function handleAddNewQuestion() {
+            handleQuestionLoad(2);
+            $("#questionId, #questionNo, #questionDate, #questionTitle, #examIdQuestion, #questionScore").val("");
+            $("#questionActionType").val("new");
+        }
+
+        function handleAddNewOption() {
+            handleOptionLoad(2);
+            $("#optionId, #optionNo, #optionTitle, #questionIdOption").val("");
+            $("#optionActionType").val("new");
+        }
+
+        function handleAddNewResult() {
+            handleResultLoad(2);
+            $("#resultId, #option, #answerOption, #stCodeExamId, #questionIdResult").val("");
+            $("#resultActionType").val("new");
+        }
+
+        function handleAddNewStudentExam() {
+            handleStudentExamLoad(2);
+            $("#stCodeExamId, #examIdStudentExam, #stCodeStudentExam").val("");
+            $("#studentExamActionType").val("new");
+        }
+
+
+        // Function to fill the form with the details of the student to be edited
+
+
+        function fillEditStudent(stCode) {
+            let st = getStudentById(stCode);
+            if (st != null) {
+                $("#stCode").val(st.stCode);
+                $("#stFirstName").val(st.firstName);
+                $("#stLastName").val(st.lastName);
+                $("#stField").val(st.stField);
+                $("#stActionType").val(st.stCode);
+                handleStudentLoad(2);
+            }
+        }
+
+        function fillEditCourse(courseId) {
+            let course = getCourseById(courseId);
+            if (course != null) {
+                $("#courseId").val(course.courseId);
+                $("#courseTitle").val(course.courseTitle);
+                $("#unitNo").val(course.unitNo);
+                $("#courseActionType").val(course.courseId);
+                handleCourseLoad(2);
+            }
+        }
+
+        function fillEditExam(examId) {
+            let exam = getExamById(examId);
+            if (exam != null) {
+                $("#examId").val(exam.examId);
+                $("#examTitle").val(exam.examTitle);
+                $("#examDate").val(exam.examDate);
+                $("#percent").val(exam.percent);
+                $("#courseIdExam").val(exam.courseId);
+                $("#examActionType").val(exam.examId);
+                handleExamLoad(2);
+            }
+        }
+
+        function fillEditQuestion(questionId) {
+            let question = getQuestionById(questionId);
+            if (question != null) {
+                $("#questionId").val(question.questionId);
+                $("#questionNo").val(question.questionNo);
+                $("#questionDate").val(question.questionDate);
+                $("#questionTitle").val(question.questionTitle);
+                $("#examIdQuestion").val(question.examId);
+                $("#questionScore").val(question.score);
+                $("#questionActionType").val(question.questionId);
+                handleQuestionLoad(2);
+            }
+        }
+
+        function fillEditOption(optionId) {
+            let option = getOptionById(optionId);
+            if (option != null) {
+                $("#optionId").val(option.optionId);
+                $("#optionNo").val(option.optionNo);
+                $("#optionTitle").val(option.optionTitle);
+                $("#questionIdOption").val(option.questionId);
+                $("#optionActionType").val(option.optionId);
+                handleOptionLoad(2);
+            }
+        }
+
+        function fillEditResult(resultId) {
+            let result = getResultById(resultId);
+            if (result != null) {
+                $("#resultId").val(result.resultId);
+                $("#option").val(result.option);
+                $("#answerOption").val(result.answerOption);
+                $("#stCodeExamIdResult").val(result.stCodeExamId);
+                $("#questionIdResult").val(result.questionId);
+                $("#resultActionType").val(result.resultId);
+                handleResultLoad(2);
+            }
+        }
+
+        function fillEditStudentExam(stCodeExamId) {
+            let stExam = getStudentExamById(stCodeExamId);
+            if (stExam != null) {
+                $("#stCodeExamId").val(stExam.stCodeExamId);
+                $("#examIdStudentExam").val(stExam.examId);
+                $("#stCodeStudentExam").val(stExam.stCode);
+                $("#studentExamActionType").val(stExam.stCodeExamId);
+                handleStudentExamLoad(2);
+            }
+        }
+
+        function saveStudent() {
+            let actionType = $("#stActionType").val();
+            if (actionType === "new") {
+                let st = new Student(
+                    $("#stCode").val(),
+                    $("#stFirstName").val(),
+                    $("#stLastName").val(),
+                    $("#stField").val()
+                );
+                stArr.push(st);
+            } else {
+                let st = getStudentById(actionType);
+                st.stCode = $("#stCode").val();
+                st.firstName = $("#stFirstName").val();
+                st.lastName = $("#stLastName").val();
+                st.stField = $("#stField").val();
+            }
+
+            handleStudentLoad(1);
+            createStudentTable();
+            saveData();
+        }
+
+        function saveCourse() {
+            let actionType = $("#courseActionType").val();
+            if (actionType === "new") {
+                let course = new Course(
+                    $("#courseId").val(),
+                    $("#courseTitle").val(),
+                    $("#unitNo").val()
+                );
+                courseArr.push(course);
+            } else {
+                let course = getCourseById(actionType);
+                course.courseId = $("#courseId").val();
+                course.courseTitle = $("#courseTitle").val();
+                course.unitNo = $("#unitNo").val();
+            }
+
+            handleCourseLoad(1);
+            createCourseTable();
+            saveData();
+        }
+
+        function saveExam() {
+            let actionType = $("#examActionType").val();
+            if (actionType === "new") {
+                let exam = new Exam(
+                    $("#examId").val(),
+                    $("#examTitle").val(),
+                    $("#examDate").val(),
+                    $("#percent").val(),
+                    [],
+                    $("#courseIdExam").val()
+                );
+                let course = getCourseById(exam.courseId);
+                if (course !== undefined && course !== null) {
+                    examArr.push(exam);
+                    course.exams.push(exam);
+                }
+            } else {
+                let exam = getExamById(actionType);
+                exam.examId = $("#examId").val();
+                exam.examTitle = $("#examTitle").val();
+                exam.examDate = $("#examDate").val();
+                exam.percent = $("#percent").val();
+            }
+
+            handleExamLoad(1);
+            createExamTable();
+            saveData();
+        }
+
+        function saveQuestion() {
+            let actionType = $("#questionActionType").val();
+            if (actionType === "new") {
+                let question = new Questions(
+                    $("#questionId").val(),
+                    $("#questionNo").val(),
+                    $("#questionDate").val(),
+                    $("#questionTitle").val(),
+                    [],
+                    $("#examIdQuestion").val(),
+                    parseFloat($("#questionScore").val())
+                );
+                let exam = getExamById(question.examId);
+                if (exam !== undefined && exam !== null) {
+                    questionArr.push(question);
+                    exam.questions.push(question);
+                }
+            } else {
+                let question = getQuestionById(actionType);
+                question.questionId = $("#questionId").val();
+                question.questionNo = $("#questionNo").val();
+                question.questionDate = $("#questionDate").val();
+                question.questionTitle = $("#questionTitle").val();
+                question.score = parseFloat($("#questionScore").val());
+            }
+
+            handleQuestionLoad(1);
+            createQuestionTable();
+            saveData();
+        }
+
+        function saveOption() {
+            let actionType = $("#optionActionType").val();
+            if (actionType === "new") {
+                let option = new Options(
+                    $("#optionId").val(),
+                    $("#optionNo").val(),
+                    $("#optionTitle").val(),
+                    $("#questionIdOption").val()
+                );
+                let question = getQuestionById(option.questionId);
+                if (question !== undefined && question !== null) {
+                    optionArr.push(option);
+                    question.options.push(option);
+                }
+            } else {
+                let option = getOptionById(actionType);
+                option.optionId = $("#optionId").val();
+                option.optionNo = $("#optionNo").val();
+                option.optionTitle = $("#optionTitle").val();
+            }
+
+            handleOptionLoad(1);
+            createOptionTable();
+            saveData();
+        }
+
+        function saveResult() {
+            let actionType = $("#resultActionType").val();
+            if (actionType === "new") {
+                let optionId = $("#option").val();
+                let questionId = $("#questionIdResult").val();
+                let stCodeExamId = $("#stCodeExamIdResult").val();
+
+                let option = getOptionById(optionId);
+                let question = getQuestionById(questionId);
+                let stExam = getStudentExamById(stCodeExamId);
+                let result = new Result(
+                    $("#resultId").val(),
+                    optionId,
+                    $("#answerOption").val(),
+                    stCodeExamId,
+                    questionId
+                );
+
+                if (option && question && stExam) {
+                    resultArr.push(result);
+                    stExam.result.push(result);
+
+                    let student = getStudentById(stExam.stCode);
+                    if (student) {
+                        student.addExamResult(result);
+                    }
+                }
+            } else {
+                let result = getResultById(actionType);
+                result.resultId = $("#resultId").val();
+                result.option = $("#option").val();
+                result.answerOption = $("#answerOption").val();
+                result.stCodeExamId = $("#stCodeExamId").val();
+            }
+
+            handleResultLoad(1);
+            createResultTable();
+            saveData();
+        }
+
+        function saveStudentExam() {
+            let actionType = $("#studentExamActionType").val();
+            if (actionType === "new") {
+                let stExam = new Student_Exam(
+                    $("#stCodeExamId").val(),
+                    $("#examIdStudentExam").val(),
+                    $("#stCodeStudentExam").val()
+                );
+                let exam = getExamById(stExam.examId);
+                let student = getStudentById(stExam.stCode);
+                if (student && exam) {
+                    stExamArr.push(stExam);
+                }
+            } else {
+                let stExam = getStudentExamById(actionType);
+                stExam.stCodeExamId = $("#stCodeExamId").val();
+                stExam.examId = $("#examIdStudentExam").val();
+                stExam.stCode = $("#stCodeStudentExam").val();
+            }
+
+            handleStudentExamLoad(1);
+            createStudentExamTable();
+            saveData();
+        }
+
+        function selectCourseForStudent(stCode) {
+            let st = getStudentById(stCode);
+            if (st != null) {
+                let courseId = prompt("Enter Course ID to select for the student:");
+                let course = getCourseById(courseId);
+                if (course != null) {
+                    st.addCourse(course);
+                    alert(`Course ${course.courseTitle} added to student ${st.fullName()}`);
+                    createStudentTable();
+                } else {
+                    alert("Course not found!");
+                }
+            } else {
+                alert("Student not found!");
+            }
+        }
+
+
+
+        // Function to get the index of a student by their code
+
+
+        function getIndexById(arr, key, value) {
+            return arr.findIndex(item => item[key] == value);
+        }
+
+        function getStudentIndexById(stCode) {
+            return getIndexById(stArr, 'stCode', stCode);
+        }
+
+        function getCourseIndexById(courseId) {
+            return getIndexById(courseArr, 'courseId', courseId);
+        }
+
+        function getExamIndexById(examId) {
+            return getIndexById(examArr, 'examId', examId);
+        }
+
+        function getQuestionIndexById(questionId) {
+            return getIndexById(questionArr, 'questionId', questionId);
+        }
+
+        function getOptionIndexById(optionId) {
+            return getIndexById(optionArr, 'optionId', optionId);
+        }
+
+        function getResultIndexById(resultId) {
+            return getIndexById(resultArr, 'resultId', resultId);
+        }
+
+        function getStudentExamIndexById(stCodeExamId) {
+            return getIndexById(stExamArr, 'stCodeExamId', stCodeExamId);
+        }
+
+        // Generic delete function
+        function deleteById(arr, indexFunc, id, saveFunc, renderFunc) {
+            let idx = indexFunc(id);
+            if (idx > -1) {
+                arr.splice(idx, 1);
+                saveFunc();
+                renderFunc();
+            }
+        }
+
+        function deleteStudentById(stCode) {
+            deleteById(stArr, getStudentIndexById, stCode, saveData, createStudentTable);
+        }
+
+        function deleteCourseById(courseId) {
+            deleteById(courseArr, getCourseIndexById, courseId, saveData, createCourseTable);
+        }
+
+        function deleteExamById(examId) {
+            deleteById(examArr, getExamIndexById, examId, saveData, createExamTable);
+        }
+
+        function deleteQuestionById(questionId) {
+            deleteById(questionArr, getQuestionIndexById, questionId, saveData, createQuestionTable);
+        }
+
+        function deleteOptionById(optionId) {
+            deleteById(optionArr, getOptionIndexById, optionId, saveData, createOptionTable);
+        }
+
+        function deleteResultById(resultId) {
+            deleteById(resultArr, getResultIndexById, resultId, saveData, createResultTable);
+        }
+
+        function deleteStudentExamById(stCodeExamId) {
+            deleteById(stExamArr, getStudentExamIndexById, stCodeExamId, saveData, createStudentExamTable);
+        }
+
+        // Link results to each student exam
+        function addResultToStExam() {
+            $.each(stExamArr, function (i, stExam) {
+                stExam.result = $.grep(resultArr, function (res) {
+                    return res.stCodeExamId === stExam.stCodeExamId;
+                });
+                console.log("Results Linked to Student Exam:", stExam);
+            });
+        }
+
+        // Link options to each question
+        function addOptionToQuestion() {
+            $.each(questionArr, function (i, question) {
+                question.options = $.grep(optionArr, function (opt) {
+                    return opt.questionId === question.questionId;
+                });
+            });
+            saveData();
+        }
+
+        // Main grading logic
+        function calculateExamResultsForStudents() {
+            $.each(stExamArr, function (i, stExam) {
+                let totalScore = 0;
+                let totalPossibleScore = 0;
+
+                $.each(stExam.result || [], function (j, result) {
+                    let question = getQuestionById(result.questionId);
+                    if (question) {
+                        totalPossibleScore += question.score;
+                        if (result.answerOption === "Correct") {
+                            totalScore += question.score;
+                        }
+                    }
+                });
+
+                if (totalPossibleScore > 0) {
+                    let exam = getExamById(stExam.examId);
+                    if (exam) {
+                        let examResult = (totalScore / totalPossibleScore) * exam.percent;
+                        let student = getStudentById(stExam.stCode);
+                        if (student) {
+                            student.addExamResult({ examId: stExam.examId, result: examResult });
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+
+
+    </script>
+</head>
+
+<body>
+    <div id="dStudent">
+        <div id="dhdrStudent">
+            <button onclick="handleAddNewStudent()" id="btnAddStudent">Add new Student</button>
+            <!-- Button to add a new student -->
+        </div>
+        <div id="dtblStudent"></div> <!-- Div to display the student table -->
+        <div id="ddfnStudent">
+            Student Code: <input type="text" id="stCode"><br> <!-- Input for student code -->
+            First Name: <input type="text" id="stFirstName"><br> <!-- Input for first name -->
+            Last Name: <input type="text" id="stLastName"><br> <!-- Input for last name -->
+            Field: <input type="text" id="stField"><br> <!-- Input for field -->
+            <input type="hidden" id="stActionType"> <!-- Hidden input for action type -->
+            <button onclick="saveStudent()">Save</button> <!-- Button to save the student -->
+            <button onclick="handleStudentLoad(1)">Cancel</button> <!-- Button to cancel and hide the form -->
+        </div>
+    </div>
+
+    <div id="dCourse" style="margin-top: 30px;">
+        <div id="dhdrCourse">
+            <button onclick="handleAddNewCourse()" id="btnAddCourse"> Add New Course </button>
+        </div>
+        <div id="dtblCourse"></div>
+        <div id="ddfnCourse">
+            Course Id: <input type="text" id="courseId"><br>
+            Course Title: <input type="text" id="courseTitle"><br>
+            Unit No: <input type="text" id="unitNo"><br>
+            <input type="hidden" id="courseActionType">
+            <button onclick="saveCourse()">Save</button>
+            <button onclick="handleCourseLoad(1)">Cancel</button>
+        </div>
+
+    </div>
+
+    <div id="dExam" style="margin-top: 30px;">
+        <div id="dhdrExam">
+            <button onclick="handleAddNewExam()" id="btnAddExam"> Add New Exam </button>
+        </div>
+        <div id="dtblExam"></div>
+        <div id="ddfnExam">
+            Exam Id: <input type="text" id="examId"><br>
+            Exam Title: <input type="text" id="examTitle"><br>
+            Exam Date: <input type="text" id="examDate"><br>
+            Percent: <input type="text" id="percent"><br>
+            Course Id: <input type="text" id="courseIdExam"><br>
+            <input type="hidden" id="examActionType">
+            <button onclick="saveExam()">Save</button>
+            <button onclick="handleExamLoad(1)">Cancel</button>
+        </div>
+
+    </div>
+
+    <div id="dQuestion" style="margin-top: 30px;">
+        <div id="dhdrQuestion">
+            <button onclick="handleAddNewQuestion()" id="btnAddQuestion"> Add New Question </button>
+        </div>
+        <div id="dtblQuestion"></div>
+        <div id="ddfnQuestion">
+            Question Id: <input type="text" id="questionId"><br>
+            Question No: <input type="text" id="questionNo"><br>
+            Question Date: <input type="text" id="questionDate"><br>
+            Question Title: <input type="text" id="questionTitle"><br>
+            Exam Id: <input type="text" id="examIdQuestion"><br>
+            Score: <input type="text" id="questionScore"><br> <!-- Add this line to add the score input -->
+            <input type="hidden" id="questionActionType">
+            <button onclick="saveQuestion()">Save</button>
+            <button onclick="handleQuestionLoad(1)">Cancel</button>
+        </div>
+    </div>
+
+    <div id="dOption" style="margin-top: 30px;">
+        <div id="dhdrOption">
+            <button onclick="handleAddNewOption()" id="btnAddOption"> Add New Option </button>
+        </div>
+        <div id="dtblOption"></div>
+        <div id="ddfnOption">
+            Option Id: <input type="text" id="optionId"><br>
+            Option No: <input type="text" id="optionNo"><br>
+            Option Title: <input type="text" id="optionTitle"><br>
+            Question Id: <input type="text" id="questionIdOption"><br>
+            <input type="hidden" id="optionActionType">
+            <button onclick="saveOption()">Save</button>
+            <button onclick="handleOptionLoad(1)">Cancel</button>
+        </div>
+    </div>
+
+    <div id="dResult" style="margin-top: 30px;">
+        <div id="dhdrResult">
+            <button onclick="handleAddNewResult()" id="btnAddResult"> Add New Result </button>
+        </div>
+        <div id="dtblResult"></div>
+        <div id="ddfnResult">
+            Result Id: <input type="text" id="resultId"><br>
+            Option: <input type="text" id="option"><br>
+            Answer Option: <input type="text" id="answerOption"><br>
+            Student Exam Id: <input type="text" id="stCodeExamIdResult"><br>
+            Question Id: <input type="text" id="questionIdResult"><br>
+            <input type="hidden" id="resultActionType">
+            <button onclick="saveResult()">Save</button>
+            <button onclick="handleResultLoad(1)">Cancel</button>
+        </div>
+    </div>
+
+    <div id="dStudentExam" style="margin-top: 30px;">
+        <div id="dhdrStudentExam">
+            <button onclick="handleAddNewStudentExam()" id="btnAddStudentExam"> Add New Student Exam </button>
+        </div>
+        <div id="dtblStudentExam"></div>
+        <div id="ddfnStudentExam">
+            Student Exam Id: <input type="text" id="stCodeExamId"><br>
+            Exam Id: <input type="text" id="examIdStudentExam"><br>
+            Student Code: <input type="text" id="stCodeStudentExam"><br>
+            <input type="hidden" id="studentExamActionType">
+            <button onclick="saveStudentExam()">Save</button>
+            <button onclick="handleStudentExamLoad(1)">Cancel</button>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+
+
+    $(document).ready(function () {
+        loadData();
+
+        setTimeout(() => {
+            handleStudentLoad(1);     // Hide the form initially
+            handleCourseLoad(1);      // Hide the form initially
+            handleExamLoad(1);        // Hide the form initially
+            handleOptionLoad(1);      // Hide the form initially
+            handleQuestionLoad(1);    // Hide the form initially
+            handleResultLoad(1);      // Hide the form initially
+            handleStudentExamLoad(1); // Hide the form initially
+
+            // Create the initial tables
+            createCourseTable();
+            createExamTable();
+            createQuestionTable();
+            createOptionTable();
+            createResultTable();
+            createStudentTable();
+
+            addOptionToQuestion();
+            addResultToStExam();
+            calculateExamResultsForStudents();
+            createStudentTable(); // Possibly to refresh after calculation
+        }, 100); // Delay to ensure data is loaded
+    });
+
+
+
+
+
+
+
+</script>
+```
